@@ -271,6 +271,13 @@
     wildlife: [],
     fireflies: [],
     particles: [],
+    floatingTexts: [],
+    screenShake: { intensity: 0, x: 0, y: 0 },
+    cloudShadows: [],
+    seabirds: [],
+    tropicalFish: [],
+    windLeaves: [],
+    splashRipples: [],
 
     keys: { up: false, down: false, left: false, right: false }
   };
@@ -357,6 +364,60 @@
         vx: (Math.random() - 0.5) * 0.4,
         vy: (Math.random() - 0.5) * 0.4,
         pulse: Math.random() * Math.PI * 2
+      });
+    }
+
+    // Drifting Fluffy Cloud Shadows
+    for (let i = 0; i < 5; i++) {
+      state.cloudShadows.push({
+        x: Math.random() * WORLD_W,
+        y: 100 + Math.random() * (WORLD_H - 200),
+        rx: 120 + Math.random() * 80,
+        ry: 70 + Math.random() * 45,
+        speed: 12 + Math.random() * 10
+      });
+    }
+
+    // Overhead Circling Tropical Seabirds
+    for (let i = 0; i < 6; i++) {
+      state.seabirds.push({
+        cx: ISLAND_CX + (Math.random() - 0.5) * 400,
+        cy: ISLAND_CY + (Math.random() - 0.5) * 300,
+        radius: 140 + Math.random() * 180,
+        angle: Math.random() * Math.PI * 2,
+        speed: 0.45 + Math.random() * 0.35,
+        flapPhase: Math.random() * Math.PI * 2,
+        flapSpeed: 10 + Math.random() * 4,
+        x: 0,
+        y: 0
+      });
+    }
+
+    // Coastal Tropical Fish in Shallow Waters
+    for (let i = 0; i < 14; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const d = ISLAND_RY + 10 + Math.random() * 80;
+      state.tropicalFish.push({
+        x: ISLAND_CX + Math.cos(a) * (d * (ISLAND_RX / ISLAND_RY)),
+        y: ISLAND_CY + Math.sin(a) * d,
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: (Math.random() - 0.5) * 1.2,
+        color: ['#ffd54f', '#26c6da', '#ff7043', '#80cbc4'][i % 4],
+        tailPhase: Math.random() * Math.PI * 2
+      });
+    }
+
+    // Ambient Wind Leaves & Petals
+    for (let i = 0; i < 18; i++) {
+      state.windLeaves.push({
+        x: Math.random() * WORLD_W,
+        y: Math.random() * WORLD_H,
+        vx: 1.2 + Math.random() * 1.5,
+        vy: 0.4 + Math.random() * 0.8,
+        rot: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.08,
+        size: 3 + Math.random() * 3,
+        color: ['#81c784', '#aed581', '#fff59d', '#ffab91'][i % 4]
       });
     }
   }
@@ -626,7 +687,7 @@
   function performAction() {
     if (!state.running) return;
     const p = state.player;
-    p.swinging = 12; // trigger swing animation
+    p.swinging = 14; // trigger swing animation
     p.energy = Math.max(0, p.energy - 3);
 
     let acted = false;
@@ -634,26 +695,31 @@
     // 1. Check Trees
     for (let i = state.trees.length - 1; i >= 0; i--) {
       const t = state.trees[i];
-      if (Math.hypot(p.x - t.x, p.y - t.y) < p.radius + 50) {
+      if (Math.hypot(p.x - t.x, p.y - t.y) < p.radius + 52) {
         sound.playChop();
+        triggerScreenShake(4);
         const damage = p.equippedTool === 'Stone Axe' ? 2 : 1;
         t.hp -= damage;
-        createParticles(t.x, t.y, 8, '#8d6e63');
+        createParticles(t.x, t.y, 10, '#8d6e63');
         if (t.hp <= 0) {
           const woodYield = p.equippedTool === 'Stone Axe' ? 4 : 2;
           state.inventory.wood += woodYield;
           state.inventory.leaves += 2;
+          spawnFloatText(t.x, t.y - 25, `+${woodYield} Wood`, '#ffd54f');
           if (t.type === 'palm' && Math.random() < 0.7) {
             state.inventory.coconuts += 1;
+            spawnFloatText(t.x + 15, t.y - 45, '+1 Coconut', '#8d6e63');
             showToast(`Chopped tree! Obtained ${woodYield} Wood, 2 Leaves, and a Coconut.`);
           } else if (t.type === 'vine') {
             state.inventory.vines += 2;
+            spawnFloatText(t.x + 15, t.y - 45, '+2 Vines', '#81c784');
             showToast(`Chopped vine tree! Obtained ${woodYield} Wood and 2 Jungle Vines.`);
           } else {
             showToast(`Chopped tree! Obtained ${woodYield} Wood.`);
           }
           state.trees.splice(i, 1);
         } else {
+          spawnFloatText(t.x, t.y - 20, `Hit ${damage}`, '#ffb74d');
           showToast(`Chopping tree... (${t.hp}/${t.maxHp})`);
         }
         acted = true;
@@ -665,15 +731,18 @@
     if (!acted) {
       for (let i = state.rocks.length - 1; i >= 0; i--) {
         const r = state.rocks[i];
-        if (Math.hypot(p.x - r.x, p.y - r.y) < p.radius + 50) {
+        if (Math.hypot(p.x - r.x, p.y - r.y) < p.radius + 52) {
           sound.playMine();
+          triggerScreenShake(4.5);
           r.hp -= 1;
-          createParticles(r.x, r.y, 8, '#b0bec5');
+          createParticles(r.x, r.y, 10, '#b0bec5');
           if (r.hp <= 0) {
             state.inventory.stone += 3;
+            spawnFloatText(r.x, r.y - 25, '+3 Stone', '#cfd8dc');
             showToast('Mined granite rock! Obtained 3 Stones.');
             state.rocks.splice(i, 1);
           } else {
+            spawnFloatText(r.x, r.y - 20, 'Hit 1', '#eceff1');
             showToast(`Mining rock... (${r.hp}/${r.maxHp})`);
           }
           acted = true;
@@ -691,6 +760,8 @@
             b.hasBerries = false;
             sound.playEat();
             state.inventory.berries += 3;
+            createParticles(b.x, b.y, 8, '#e91e63');
+            spawnFloatText(b.x, b.y - 22, '+3 Berries', '#ff4081');
             showToast('Gathered 3 Ripe Jungle Berries!');
           } else {
             showToast('This bush has no ripe berries right now.');
@@ -703,9 +774,11 @@
 
     // 4. Check Freshwater Spring
     if (!acted) {
-      if (Math.hypot(p.x - state.spring.x, p.y - state.spring.y) < p.radius + state.spring.radius + 10) {
+      if (Math.hypot(p.x - state.spring.x, p.y - state.spring.y) < p.radius + state.spring.radius + 12) {
         sound.playEat();
         p.thirst = 100;
+        createParticles(state.spring.x, state.spring.y, 10, '#29b6f6');
+        spawnFloatText(state.spring.x, state.spring.y - 25, 'Thirst 100%', '#40c4ff');
         showToast('Drank fresh mountain spring water. Thirst 100%!');
         acted = true;
       }
@@ -714,13 +787,15 @@
     // 5. Check Plane Crash Wreckage
     if (!acted) {
       const pw = state.planeWreck;
-      if (Math.hypot(p.x - pw.x, p.y - pw.y) < p.radius + 40) {
+      if (Math.hypot(p.x - pw.x, p.y - pw.y) < p.radius + 45) {
         if (!pw.searched) {
           pw.searched = true;
           p.hasPlaneBattery = true;
           state.inventory.coconuts += 2;
           state.inventory.cookedFood += 2;
           sound.playCraft();
+          triggerScreenShake(3);
+          spawnFloatText(pw.x, pw.y - 30, '+Plane Battery & Rations', '#ffd54f');
           showToast('Salvaged Aircraft Emergency Battery & Canned Rations from the wreckage!');
         } else {
           showToast('The aircraft fuselage is stripped of useful parts.');
@@ -755,18 +830,22 @@
     if (!acted) {
       for (let i = state.wildlife.length - 1; i >= 0; i--) {
         const w = state.wildlife[i];
-        if (Math.hypot(p.x - w.x, p.y - w.y) < p.radius + 32) {
+        if (Math.hypot(p.x - w.x, p.y - w.y) < p.radius + 36) {
           sound.playAttack();
+          triggerScreenShake(5.5);
           const damage = p.equippedTool === 'Wooden Spear' ? 30 : 12;
           w.hp -= damage;
           w.aggro = true;
           createParticles(w.x, w.y, 10, '#ff5252');
+          spawnFloatText(w.x, w.y - 20, `-${damage} HP`, '#ff5252');
           if (w.hp <= 0) {
             if (w.type === 'boar') {
               state.inventory.meat += 2;
+              spawnFloatText(w.x, w.y - 35, '+2 Raw Meat', '#ff1744');
               showToast('Defeated wild boar! Obtained 2 Raw Meat.');
             } else {
               state.inventory.meat += 1;
+              spawnFloatText(w.x, w.y - 35, '+1 Crab Meat', '#ff7043');
               showToast('Caught coastal crab! Obtained 1 Crab Meat.');
             }
             state.wildlife.splice(i, 1);
@@ -787,6 +866,8 @@
         sound.playMine();
         if (Math.random() < 0.65) {
           state.inventory.fish += 1;
+          createParticles(p.x, p.y, 8, '#26c6da');
+          spawnFloatText(p.x, p.y - 25, '+1 Fresh Fish', '#00e5a3');
           showToast('Reeled in a fresh ocean fish!');
         } else {
           showToast('The fish nibbled the bait and slipped away.');
@@ -952,6 +1033,23 @@
     }, 3200);
   }
 
+  function spawnFloatText(x, y, text, color = '#ffeb3b') {
+    state.floatingTexts.push({
+      x,
+      y,
+      text,
+      color,
+      vy: -1.2,
+      alpha: 1,
+      life: 0,
+      maxLife: 42
+    });
+  }
+
+  function triggerScreenShake(intensity = 4) {
+    state.screenShake.intensity = Math.max(state.screenShake.intensity, intensity);
+  }
+
   function createParticles(x, y, count, color) {
     for (let i = 0; i < count; i++) {
       const a = Math.random() * Math.PI * 2;
@@ -984,12 +1082,12 @@
     timeText.textContent = `${h12}:00 ${ampm}`;
     dayText.textContent = `Day ${state.day}`;
 
-    // Weather
+    // Weather Simulation
     state.weatherTimer += delta;
-    if (state.weatherTimer > 40) {
+    if (state.weatherTimer > 35) {
       state.weatherTimer = 0;
       const roll = Math.random();
-      if (roll < 0.5) {
+      if (roll < 0.48) {
         state.weather = 'clear';
         weatherText.textContent = 'Clear';
         weatherFx.className = 'weather-overlay';
@@ -997,15 +1095,85 @@
         state.weather = 'rain';
         weatherText.textContent = 'Rainfall';
         weatherFx.className = 'weather-overlay rain';
-        state.player.thirst = Math.min(100, state.player.thirst + 10);
+        state.player.thirst = Math.min(100, state.player.thirst + 12);
       } else {
         state.weather = 'storm';
         weatherText.textContent = 'Storm';
         weatherFx.className = 'weather-overlay storm';
         sound.playThunder();
+        triggerScreenShake(7);
         lightningFx.classList.add('flash');
-        setTimeout(() => lightningFx.classList.remove('flash'), 100);
+        setTimeout(() => lightningFx.classList.remove('flash'), 120);
       }
+    }
+
+    // Screen Shake Decay
+    if (state.screenShake.intensity > 0) {
+      state.screenShake.x = (Math.random() - 0.5) * state.screenShake.intensity * 2.2;
+      state.screenShake.y = (Math.random() - 0.5) * state.screenShake.intensity * 2.2;
+      state.screenShake.intensity *= 0.88;
+      if (state.screenShake.intensity < 0.2) {
+        state.screenShake.intensity = 0;
+        state.screenShake.x = 0;
+        state.screenShake.y = 0;
+      }
+    }
+
+    // Floating Text Popups Update
+    for (let i = state.floatingTexts.length - 1; i >= 0; i--) {
+      const ft = state.floatingTexts[i];
+      ft.y += ft.vy;
+      ft.life++;
+      ft.alpha = 1 - (ft.life / ft.maxLife);
+      if (ft.life >= ft.maxLife) state.floatingTexts.splice(i, 1);
+    }
+
+    // Drifting Cloud Shadows
+    state.cloudShadows.forEach(c => {
+      c.x += c.speed * delta;
+      if (c.x > WORLD_W + c.rx + 50) c.x = -c.rx - 50;
+    });
+
+    // Circling Overhead Seabirds
+    state.seabirds.forEach(b => {
+      b.angle += b.speed * delta;
+      b.x = b.cx + Math.cos(b.angle) * b.radius;
+      b.y = b.cy + Math.sin(b.angle) * (b.radius * 0.65);
+      b.flapPhase += b.flapSpeed * delta;
+    });
+
+    // Coastal Tropical Fish in Shallow Waters
+    state.tropicalFish.forEach(f => {
+      f.x += f.vx;
+      f.y += f.vy;
+      f.tailPhase += 0.25;
+      const dCenter = Math.hypot(f.x - ISLAND_CX, f.y - ISLAND_CY);
+      if (dCenter < ISLAND_RY + 15 || dCenter > ISLAND_RY + 180) {
+        f.vx = -f.vx;
+        f.vy = -f.vy;
+      }
+      if (Math.hypot(f.x - state.player.x, f.y - state.player.y) < 70) {
+        const fleeA = Math.atan2(f.y - state.player.y, f.x - state.player.x);
+        f.vx = Math.cos(fleeA) * 2.8;
+        f.vy = Math.sin(fleeA) * 2.8;
+      }
+    });
+
+    // Ambient Wind Leaves & Petals
+    state.windLeaves.forEach(l => {
+      l.x += l.vx;
+      l.y += l.vy;
+      l.rot += l.rotSpeed;
+      if (l.x > WORLD_W + 50) l.x = -50;
+      if (l.y > WORLD_H + 50) l.y = -50;
+    });
+
+    // Splash Ripples
+    for (let i = state.splashRipples.length - 1; i >= 0; i--) {
+      const sp = state.splashRipples[i];
+      sp.r += 0.55;
+      sp.alpha -= 0.025;
+      if (sp.alpha <= 0) state.splashRipples.splice(i, 1);
     }
 
     // Player Movement & Click-to-Move
@@ -1017,7 +1185,9 @@
     if (state.keys.left) dx -= 1;
     if (state.keys.right) dx += 1;
 
+    let isMoving = false;
     if (dx !== 0 || dy !== 0) {
+      isMoving = true;
       p.targetX = null;
       p.targetY = null;
       p.interactTarget = null;
@@ -1028,15 +1198,16 @@
       p.angle = Math.atan2(dy, dx);
       p.x += dx * p.speed;
       p.y += dy * p.speed;
-      p.walkStep += 0.2;
+      p.walkStep += 0.25;
     } else if (p.targetX !== null && p.targetY !== null) {
       const dist = Math.hypot(p.targetX - p.x, p.targetY - p.y);
       const stopDist = p.interactTarget ? 50 : 6;
       if (dist > stopDist) {
+        isMoving = true;
         p.angle = Math.atan2(p.targetY - p.y, p.targetX - p.x);
         p.x += Math.cos(p.angle) * p.speed;
         p.y += Math.sin(p.angle) * p.speed;
-        p.walkStep += 0.2;
+        p.walkStep += 0.25;
       } else {
         if (p.interactTarget) {
           performAction();
@@ -1044,6 +1215,24 @@
         }
         p.targetX = null;
         p.targetY = null;
+      }
+    }
+
+    // Footstep Dust & Shallow Water Ripples
+    if (isMoving && Math.random() < 0.42) {
+      const isWater = Math.hypot(p.x - ISLAND_CX, p.y - ISLAND_CY) > ISLAND_RY - 22;
+      if (isWater) {
+        state.splashRipples.push({ x: p.x, y: p.y + 8, r: 4, alpha: 0.75 });
+      } else {
+        state.particles.push({
+          x: p.x - Math.cos(p.angle) * 10,
+          y: p.y - Math.sin(p.angle) * 10 + 6,
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: -Math.random() * 0.6,
+          radius: 2.2 + Math.random() * 2,
+          color: 'rgba(215, 204, 200, 0.45)',
+          life: 14
+        });
       }
     }
 
@@ -1089,22 +1278,44 @@
 
     if (p.health <= 0) triggerEnding('death');
 
-    // Wildlife Update
+    // Wildlife Update with Animated Walking / Fleeing
     state.wildlife.forEach(w => {
-      if (w.aggro) {
-        const a = Math.atan2(p.y - w.y, p.x - w.x);
-        w.x += Math.cos(a) * w.speed;
-        w.y += Math.sin(a) * w.speed;
-        if (Math.hypot(p.x - w.x, p.y - w.y) < p.radius + 14) {
-          p.health = Math.max(0, p.health - 12 * delta);
+      if (w.type === 'boar') {
+        w.walkPhase = (w.walkPhase || 0) + (Math.hypot(w.vx || 0, w.vy || 0) > 0.1 ? 0.22 : 0.04);
+        if (w.aggro) {
+          const a = Math.atan2(p.y - w.y, p.x - w.x);
+          w.x += Math.cos(a) * w.speed;
+          w.y += Math.sin(a) * w.speed;
+          if (Math.hypot(p.x - w.x, p.y - w.y) < p.radius + 14) {
+            p.health = Math.max(0, p.health - 12 * delta);
+            triggerScreenShake(3);
+          }
+        } else {
+          if (Math.random() < 0.02) {
+            w.vx = (Math.random() - 0.5) * w.speed;
+            w.vy = (Math.random() - 0.5) * w.speed;
+          }
+          w.x += w.vx || 0;
+          w.y += w.vy || 0;
         }
-      } else {
-        if (Math.random() < 0.02) {
-          w.vx = (Math.random() - 0.5) * w.speed;
-          w.vy = (Math.random() - 0.5) * w.speed;
+      } else if (w.type === 'crab') {
+        w.legPhase = (w.legPhase || 0) + 0.28;
+        const distToPlayer = Math.hypot(p.x - w.x, p.y - w.y);
+        if (distToPlayer < 80) {
+          w.clawAlert = Math.min(1, (w.clawAlert || 0) + 0.15);
+          // Scuttle away sideways
+          const a = Math.atan2(w.y - p.y, w.x - p.x);
+          w.x += Math.cos(a) * 1.5;
+          w.y += Math.sin(a) * 1.5;
+        } else {
+          w.clawAlert = Math.max(0, (w.clawAlert || 0) - 0.05);
+          if (Math.random() < 0.03) {
+            w.vx = (Math.random() - 0.5) * w.speed;
+            w.vy = (Math.random() - 0.5) * w.speed;
+          }
+          w.x += w.vx || 0;
+          w.y += w.vy || 0;
         }
-        w.x += w.vx;
-        w.y += w.vy;
       }
     });
 
@@ -1142,29 +1353,62 @@
     equippedTool.textContent = p.equippedTool;
   }
 
-  // --- Canvas 2D Rendering Engine ---
+  // --- Dynamic 60 FPS Canvas 2D Rendering Engine ---
   function render(time) {
     const w = canvas.width;
     const h = canvas.height;
     ctx.clearRect(0, 0, w, h);
 
     ctx.save();
-    // Apply Camera Translation
-    ctx.translate(-state.camera.x, -state.camera.y);
+    // Apply Camera Translation with Screen Shake
+    ctx.translate(-state.camera.x + state.screenShake.x, -state.camera.y + state.screenShake.y);
 
-    // 1. Endless Deep Ocean with Animated Waves
-    const oceanGrad = ctx.createRadialGradient(ISLAND_CX, ISLAND_CY, 200, ISLAND_CX, ISLAND_CY, 900);
+    // 1. Endless Deep Ocean with Multi-Tier Animated Waves
+    const oceanGrad = ctx.createRadialGradient(ISLAND_CX, ISLAND_CY, 220, ISLAND_CX, ISLAND_CY, 950);
     oceanGrad.addColorStop(0, '#0277bd');
-    oceanGrad.addColorStop(1, '#00294d');
+    oceanGrad.addColorStop(0.7, '#01579b');
+    oceanGrad.addColorStop(1, '#002244');
     ctx.fillStyle = oceanGrad;
-    ctx.fillRect(state.camera.x, state.camera.y, w, h);
+    ctx.fillRect(state.camera.x - 50, state.camera.y - 50, w + 100, h + 100);
 
-    // Shoreline White Foam Pulse
-    const wavePulse = (Math.sin(time / 450) + 1) * 8;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
-    ctx.lineWidth = 4;
+    // Dynamic Rolling Wave Arcs in Deep Ocean
+    for (let waveTier = 0; waveTier < 4; waveTier++) {
+      const wRadiusX = ISLAND_RX + 80 + waveTier * 65 + Math.sin(time * 0.0012 + waveTier) * 14;
+      const wRadiusY = ISLAND_RY + 65 + waveTier * 45 + Math.cos(time * 0.0012 + waveTier) * 12;
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.12 - waveTier * 0.025})`;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.ellipse(ISLAND_CX, ISLAND_CY, wRadiusX, wRadiusY, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Coastal Tropical Fish in Shallow Waters
+    state.tropicalFish.forEach(f => {
+      ctx.save();
+      ctx.translate(f.x, f.y);
+      const angle = Math.atan2(f.vy, f.vx);
+      ctx.rotate(angle);
+      ctx.fillStyle = f.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 7, 3.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Wagging tail
+      const tailWag = Math.sin(f.tailPhase) * 3;
+      ctx.beginPath();
+      ctx.moveTo(-6, 0);
+      ctx.lineTo(-11, -3 + tailWag);
+      ctx.lineTo(-11, 3 + tailWag);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // Dynamic Lapping Shoreline Wave Foam (In and Out Rhythmic Tide)
+    const tide = (Math.sin(time * 0.0016) + 1) * 9;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.42)';
+    ctx.lineWidth = 5;
     ctx.beginPath();
-    ctx.ellipse(ISLAND_CX, ISLAND_CY, ISLAND_RX + 8 + wavePulse, ISLAND_RY + 8 + wavePulse, 0, 0, Math.PI * 2);
+    ctx.ellipse(ISLAND_CX, ISLAND_CY, ISLAND_RX + 4 + tide, ISLAND_RY + 4 + tide, 0, 0, Math.PI * 2);
     ctx.stroke();
 
     // 2. Sandy Beach Terrain
@@ -1172,6 +1416,17 @@
     ctx.beginPath();
     ctx.ellipse(ISLAND_CX, ISLAND_CY, ISLAND_RX, ISLAND_RY, 0, 0, Math.PI * 2);
     ctx.fill();
+
+    // Subtle Beach Shell & Pebble Specks
+    ctx.fillStyle = 'rgba(180, 150, 100, 0.35)';
+    for (let s = 0; s < 24; s++) {
+      const sa = s * 0.28;
+      const sx = ISLAND_CX + Math.cos(sa) * (ISLAND_RX - 35);
+      const sy = ISLAND_CY + Math.sin(sa) * (ISLAND_RY - 25);
+      ctx.beginPath();
+      ctx.arc(sx, sy, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // 3. Dense Rainforest Grass & Dirt Paths
     ctx.fillStyle = '#2e7d32';
@@ -1184,15 +1439,35 @@
     ctx.ellipse(ISLAND_CX, ISLAND_CY - 15, ISLAND_RX - 150, ISLAND_RY - 120, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 4. Freshwater Lagoon / Mountain Spring
+    // Soft Drifting Cloud Shadows Over Terrain
+    ctx.fillStyle = 'rgba(8, 24, 40, 0.12)';
+    state.cloudShadows.forEach(c => {
+      ctx.beginPath();
+      ctx.ellipse(c.x, c.y, c.rx, c.ry, 0.2, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // 4. Freshwater Lagoon / Mountain Spring with Water Ripples
     const sp = state.spring;
     ctx.fillStyle = '#29b6f6';
     ctx.beginPath();
     ctx.arc(sp.x, sp.y, sp.radius, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#81d4fa';
-    ctx.lineWidth = 3;
+    const springPulse = (Math.sin(time * 0.0025) + 1) * 3;
+    ctx.strokeStyle = 'rgba(129, 212, 250, 0.65)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(sp.x, sp.y, sp.radius - 8 + springPulse, 0, Math.PI * 2);
     ctx.stroke();
+
+    // Splash / Water Wade Ripples
+    state.splashRipples.forEach(sr => {
+      ctx.strokeStyle = `rgba(178, 235, 242, ${sr.alpha})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(sr.x, sr.y, sr.r, 0, Math.PI * 2);
+      ctx.stroke();
+    });
 
     // 5. Plane Crash Site Fuselage on Beach
     const pw = state.planeWreck;
@@ -1203,23 +1478,27 @@
     ctx.fillRect(-45, -16, 90, 32);
     ctx.fillStyle = '#90a4ae';
     ctx.fillRect(-12, -50, 24, 100);
-    // Smoke particles
-    ctx.fillStyle = 'rgba(80, 80, 80, 0.35)';
+    // Dynamic smoke plume
+    const smokeWobble = Math.sin(time * 0.004) * 6;
+    ctx.fillStyle = 'rgba(80, 80, 80, 0.32)';
     ctx.beginPath();
-    ctx.arc(20, -20 + Math.sin(time / 200) * 5, 12, 0, Math.PI * 2);
+    ctx.arc(20 + smokeWobble, -25, 14, 0, Math.PI * 2);
+    ctx.arc(28 + smokeWobble * 1.5, -45, 19, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
 
     // 6. Placed Structures
-    // Campfires
+    // Campfires with Animated Dancing Flames & Flying Sparks
     state.structures.campfires.forEach(cf => {
-      // Warm Light Glow
-      const cGlow = ctx.createRadialGradient(cf.x, cf.y, 10, cf.x, cf.y, 120);
-      cGlow.addColorStop(0, 'rgba(255, 140, 0, 0.45)');
+      // Warm Light Glow Pulse
+      const glowPulse = 115 + Math.sin(time * 0.006) * 15;
+      const cGlow = ctx.createRadialGradient(cf.x, cf.y, 10, cf.x, cf.y, glowPulse);
+      cGlow.addColorStop(0, 'rgba(255, 140, 0, 0.52)');
+      cGlow.addColorStop(0.7, 'rgba(255, 80, 0, 0.18)');
       cGlow.addColorStop(1, 'transparent');
       ctx.fillStyle = cGlow;
       ctx.beginPath();
-      ctx.arc(cf.x, cf.y, 120, 0, Math.PI * 2);
+      ctx.arc(cf.x, cf.y, glowPulse, 0, Math.PI * 2);
       ctx.fill();
 
       // Stone ring
@@ -1227,16 +1506,37 @@
       ctx.beginPath();
       ctx.arc(cf.x, cf.y, 16, 0, Math.PI * 2);
       ctx.fill();
-      // Dancing fire
-      const fH = Math.sin(time / 90) * 4;
-      ctx.fillStyle = '#ff7043';
+
+      // Multi-tier procedural dancing fire tongues
+      const f1 = Math.sin(time * 0.015) * 5;
+      const f2 = Math.cos(time * 0.018) * 4;
+      ctx.fillStyle = '#ff3d00';
       ctx.beginPath();
-      ctx.arc(cf.x, cf.y, 9 + fH * 0.4, 0, Math.PI * 2);
+      ctx.ellipse(cf.x + f2 * 0.3, cf.y - 2, 11, 14 + f1 * 0.5, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#ffee58';
+
+      ctx.fillStyle = '#ff9800';
       ctx.beginPath();
-      ctx.arc(cf.x, cf.y, 5, 0, Math.PI * 2);
+      ctx.ellipse(cf.x - f2 * 0.2, cf.y - 4, 7, 10 + f1 * 0.4, 0, 0, Math.PI * 2);
       ctx.fill();
+
+      ctx.fillStyle = '#ffeb3b';
+      ctx.beginPath();
+      ctx.ellipse(cf.x, cf.y - 6, 4, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Flying fire ember spark
+      if (Math.random() < 0.25) {
+        state.particles.push({
+          x: cf.x + (Math.random() - 0.5) * 8,
+          y: cf.y - 8,
+          vx: (Math.random() - 0.5) * 0.9,
+          vy: -1.2 - Math.random() * 1.4,
+          radius: 1.8,
+          color: '#ffea00',
+          life: 22
+        });
+      }
     });
 
     // Shelters
@@ -1266,13 +1566,14 @@
       ctx.fill();
     });
 
-    // SOS Radio Beacons
+    // SOS Radio Beacons with Flashing Strobe
     state.structures.beacons.forEach(bc => {
       ctx.fillStyle = '#b0bec5';
       ctx.fillRect(bc.x - 4, bc.y - 40, 8, 40);
-      ctx.fillStyle = '#ff1744';
+      const beaconStrobe = Math.sin(time * 0.012) > 0.2 ? '#ff1744' : '#880015';
+      ctx.fillStyle = beaconStrobe;
       ctx.beginPath();
-      ctx.arc(bc.x, bc.y - 42, 5, 0, Math.PI * 2);
+      ctx.arc(bc.x, bc.y - 42, 6, 0, Math.PI * 2);
       ctx.fill();
     });
 
@@ -1288,25 +1589,26 @@
       ctx.fill();
     });
 
-    // 8. Berry Bushes
+    // 8. Berry Bushes with Gleaming Berries
     state.bushes.forEach(bs => {
       ctx.fillStyle = '#43a047';
       ctx.beginPath();
-      ctx.arc(bs.x, bs.y, 14, 0, Math.PI * 2);
+      ctx.arc(bs.x, bs.y, 15, 0, Math.PI * 2);
       ctx.fill();
       if (bs.hasBerries) {
         ctx.fillStyle = '#e91e63';
         ctx.beginPath();
-        ctx.arc(bs.x - 5, bs.y - 3, 3.5, 0, Math.PI * 2);
-        ctx.arc(bs.x + 5, bs.y + 3, 3.5, 0, Math.PI * 2);
+        ctx.arc(bs.x - 5, bs.y - 3, 4, 0, Math.PI * 2);
+        ctx.arc(bs.x + 5, bs.y + 3, 4, 0, Math.PI * 2);
+        ctx.arc(bs.x, bs.y + 6, 3.5, 0, Math.PI * 2);
         ctx.fill();
       }
     });
 
-    // 9. Palm Trees with Detailed Multi-Frond Canopies
+    // 9. Palm Trees with Dynamic Wind-Swaying Fronds
     state.trees.forEach(tr => {
       // Trunk shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.18)';
+      ctx.fillStyle = 'rgba(0,0,0,0.2)';
       ctx.beginPath();
       ctx.ellipse(tr.x + 6, tr.y + 4, 10, 5, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -1317,19 +1619,18 @@
       ctx.arc(tr.x, tr.y, 8, 0, Math.PI * 2);
       ctx.fill();
 
-      // Palm fronds
-      ctx.fillStyle = tr.type === 'palm' ? '#2e7d32' : '#1b5e20';
+      // Multi-layer Palm fronds with sinusoidal wind sway
       for (let fa = 0; fa < Math.PI * 2; fa += Math.PI / 3) {
-        const frondSway = Math.sin(time / 500 + fa) * 4;
+        const frondSway = Math.sin(time * 0.0025 + fa) * 5.5;
         ctx.beginPath();
         ctx.moveTo(tr.x, tr.y - 10);
         ctx.quadraticCurveTo(
           tr.x + Math.cos(fa) * 20,
           tr.y - 10 + Math.sin(fa) * 20 + frondSway,
-          tr.x + Math.cos(fa) * 32,
-          tr.y - 10 + Math.sin(fa) * 32 + frondSway
+          tr.x + Math.cos(fa) * 34,
+          tr.y - 10 + Math.sin(fa) * 34 + frondSway
         );
-        ctx.lineWidth = 9;
+        ctx.lineWidth = 10;
         ctx.strokeStyle = tr.type === 'palm' ? '#2e7d32' : '#1b5e20';
         ctx.stroke();
       }
@@ -1338,88 +1639,190 @@
       if (tr.type === 'palm') {
         ctx.fillStyle = '#4e342e';
         ctx.beginPath();
-        ctx.arc(tr.x - 4, tr.y - 8, 4, 0, Math.PI * 2);
-        ctx.arc(tr.x + 4, tr.y - 8, 4, 0, Math.PI * 2);
+        ctx.arc(tr.x - 4, tr.y - 8, 4.5, 0, Math.PI * 2);
+        ctx.arc(tr.x + 4, tr.y - 8, 4.5, 0, Math.PI * 2);
         ctx.fill();
       }
     });
 
-    // 10. Wildlife
+    // 10. Dynamic Wildlife with Animated Legs & Claws
     state.wildlife.forEach(wl => {
+      ctx.save();
+      ctx.translate(wl.x, wl.y);
       if (wl.type === 'boar') {
+        const walkSin = Math.sin(wl.walkPhase || 0);
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.24)';
+        ctx.beginPath();
+        ctx.ellipse(0, 8, 16, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Trotting 4 Legs
+        ctx.strokeStyle = '#271813';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(-10, 5); ctx.lineTo(-10 + walkSin * 4, 13);
+        ctx.moveTo(-4, 5); ctx.lineTo(-4 - walkSin * 4, 13);
+        ctx.moveTo(4, 5); ctx.lineTo(4 + walkSin * 4, 13);
+        ctx.moveTo(10, 5); ctx.lineTo(10 - walkSin * 4, 13);
+        ctx.stroke();
+
+        // Boar Body
         ctx.fillStyle = '#4e342e';
         ctx.beginPath();
-        ctx.ellipse(wl.x, wl.y, 16, 11, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, 17, 12, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(wl.x + 12, wl.y - 2, 5, 3); // tusks
-      } else {
-        ctx.fillStyle = '#e64a19';
+
+        // Head with Bobbing & Snout
+        const headBob = Math.sin(wl.walkPhase * 0.5) * 1.5;
+        ctx.fillStyle = '#3e2723';
         ctx.beginPath();
-        ctx.arc(wl.x, wl.y, 9, 0, Math.PI * 2);
+        ctx.arc(12, -2 + headBob, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // White Tusks
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(16, -1 + headBob);
+        ctx.lineTo(21, -6 + headBob);
+        ctx.lineTo(18, 0 + headBob);
+        ctx.fill();
+
+        // Eye
+        ctx.fillStyle = wl.aggro ? '#ff1744' : '#111';
+        ctx.beginPath();
+        ctx.arc(13, -5 + headBob, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (wl.type === 'crab') {
+        const legWalk = Math.sin(wl.legPhase || 0);
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.18)';
+        ctx.beginPath();
+        ctx.ellipse(0, 4, 12, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 6 Animated Walking Legs
+        ctx.strokeStyle = '#e64a19';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-7, 0); ctx.lineTo(-13 + legWalk * 3, 6);
+        ctx.moveTo(-3, 0); ctx.lineTo(-8 - legWalk * 3, 7);
+        ctx.moveTo(3, 0); ctx.lineTo(8 + legWalk * 3, 7);
+        ctx.moveTo(7, 0); ctx.lineTo(13 - legWalk * 3, 6);
+        ctx.stroke();
+
+        // Shell
+        ctx.fillStyle = '#ff5722';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 10, 7.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Stalk Eyes
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(-3, -7, 2.2, 0, Math.PI * 2);
+        ctx.arc(3, -7, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(-3, -7, 1.2, 0, Math.PI * 2);
+        ctx.arc(3, -7, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Animated Pinching Claws
+        const clawLift = (wl.clawAlert || 0) * 5;
+        ctx.fillStyle = '#d84315';
+        ctx.beginPath();
+        ctx.ellipse(-9, -4 - clawLift, 4, 3, -0.4, 0, Math.PI * 2);
+        ctx.ellipse(9, -4 - clawLift, 4, 3, 0.4, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.restore();
     });
 
-    // 11. Player Character (Detailed Sprite with Animation)
+    // 11. Player Character with Dynamic Walking Animation & Tool Trail
     const p = state.player;
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.rotate(p.angle);
 
     // Player Shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.fillStyle = 'rgba(0,0,0,0.28)';
     ctx.beginPath();
-    ctx.ellipse(0, 0, p.radius * 1.1, p.radius * 0.7, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 2, p.radius * 1.15, p.radius * 0.75, 0, 0, Math.PI * 2);
     ctx.fill();
+
+    // Walking Gait Bob
+    const walkBob = Math.sin(p.walkStep) * 1.5;
 
     // Backpack
     ctx.fillStyle = '#5d4037';
-    ctx.fillRect(-p.radius * 0.9, -6, 6, 12);
+    ctx.fillRect(-p.radius * 0.9, -6 + walkBob * 0.5, 6, 12);
 
     // Torso / Shirt
     ctx.fillStyle = '#0288d1';
     ctx.beginPath();
-    ctx.arc(0, 0, p.radius * 0.85, 0, Math.PI * 2);
+    ctx.arc(0, walkBob * 0.5, p.radius * 0.85, 0, Math.PI * 2);
     ctx.fill();
 
     // Head
     ctx.fillStyle = '#ffe0b2';
     ctx.beginPath();
-    ctx.arc(0, 0, p.radius * 0.55, 0, Math.PI * 2);
+    ctx.arc(0, walkBob, p.radius * 0.55, 0, Math.PI * 2);
     ctx.fill();
 
     // Hair
     ctx.fillStyle = '#3e2723';
     ctx.beginPath();
-    ctx.arc(0, -2, p.radius * 0.45, Math.PI, Math.PI * 2);
+    ctx.arc(0, -2 + walkBob, p.radius * 0.45, Math.PI, Math.PI * 2);
     ctx.fill();
 
-    // Tool in Hand with Swing Animation
-    const swingOffset = p.swinging > 0 ? (p.swinging / 12) * Math.PI * 0.6 : 0;
+    // Tool in Hand with Animated Swing Arc Trail
+    const swingOffset = p.swinging > 0 ? (p.swinging / 14) * Math.PI * 0.75 : 0;
     ctx.save();
     ctx.rotate(swingOffset);
 
     if (p.equippedTool === 'Stone Axe') {
       ctx.fillStyle = '#8d6e63';
-      ctx.fillRect(p.radius * 0.7, -3, 14, 5);
+      ctx.fillRect(p.radius * 0.7, -3, 15, 5);
       ctx.fillStyle = '#78909c';
-      ctx.fillRect(p.radius * 0.7 + 10, -7, 7, 14);
+      ctx.fillRect(p.radius * 0.7 + 10, -8, 8, 16);
     } else if (p.equippedTool === 'Wooden Spear') {
       ctx.fillStyle = '#8d6e63';
-      ctx.fillRect(p.radius * 0.7, -2, 24, 4);
+      ctx.fillRect(p.radius * 0.7, -2, 26, 4);
       ctx.fillStyle = '#b0bec5';
       ctx.beginPath();
-      ctx.moveTo(p.radius * 0.7 + 24, -5);
-      ctx.lineTo(p.radius * 0.7 + 32, 0);
-      ctx.lineTo(p.radius * 0.7 + 24, 5);
+      ctx.moveTo(p.radius * 0.7 + 26, -5);
+      ctx.lineTo(p.radius * 0.7 + 34, 0);
+      ctx.lineTo(p.radius * 0.7 + 26, 5);
       ctx.fill();
+    } else if (p.equippedTool === 'Fishing Rod') {
+      ctx.fillStyle = '#d7ccc8';
+      ctx.fillRect(p.radius * 0.7, -2, 32, 3);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(p.radius * 0.7 + 32, 0);
+      ctx.lineTo(p.radius * 0.7 + 45, 14);
+      ctx.stroke();
     }
     ctx.restore();
 
     ctx.restore();
 
-    // 12. Particles
+    // 12. Floating Dynamic Wind Leaves
+    state.windLeaves.forEach(l => {
+      ctx.save();
+      ctx.translate(l.x, l.y);
+      ctx.rotate(l.rot);
+      ctx.fillStyle = l.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, l.size, l.size * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // 13. Particles
     state.particles.forEach(pt => {
       ctx.fillStyle = pt.color;
       ctx.beginPath();
@@ -1427,18 +1830,18 @@
       ctx.fill();
     });
 
-    // 13. Fireflies Glowing at Dusk / Night
+    // 14. Fireflies Glowing at Dusk / Night
     if (state.timeOfDay > 0.7 || state.timeOfDay < 0.2) {
       state.fireflies.forEach(ff => {
         const glow = (Math.sin(ff.pulse) + 1) * 0.5;
-        ctx.fillStyle = `rgba(180, 255, 50, ${glow * 0.8})`;
+        ctx.fillStyle = `rgba(180, 255, 50, ${glow * 0.85})`;
         ctx.beginPath();
-        ctx.arc(ff.x, ff.y, 2.5, 0, Math.PI * 2);
+        ctx.arc(ff.x, ff.y, 2.8, 0, Math.PI * 2);
         ctx.fill();
       });
     }
 
-    // 13.5 Floating Action Prompt Indicator over nearby interactive object
+    // 15. Floating Action Prompt Indicator
     let nearestPrompt = null;
     let minDist = 75;
     const px = state.player.x;
@@ -1485,26 +1888,45 @@
 
     if (nearestPrompt) {
       ctx.save();
-      ctx.font = 'bold 12px "Segoe UI", sans-serif';
-      const textWidth = ctx.measureText(nearestPrompt.text).width;
-      ctx.fillStyle = 'rgba(6, 20, 36, 0.9)';
+      // Responsive dynamic font scaling for high-DPI and mobile displays
+      const isMobileTouch = window.innerWidth <= 640 || ('ontouchstart' in window);
+      const displayText = isMobileTouch ? nearestPrompt.text.replace('\[SPACE / Click\]', '[ACT / Tap]') : nearestPrompt.text;
+      const fontSize = isMobileTouch ? 11 : 12;
+      ctx.font = 'bold ' + fontSize + 'px "Segoe UI", sans-serif';
+      const textWidth = ctx.measureText(displayText).width;
+      ctx.fillStyle = 'rgba(6, 20, 36, 0.92)';
       ctx.strokeStyle = '#ffb703';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.roundRect(nearestPrompt.x - textWidth / 2 - 8, nearestPrompt.y - 12, textWidth + 16, 24, 6);
+      ctx.roundRect(nearestPrompt.x - textWidth / 2 - 8, nearestPrompt.y - 11, textWidth + 16, 22, 6);
       ctx.fill();
       ctx.stroke();
 
       ctx.fillStyle = '#ffea00';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(nearestPrompt.text, nearestPrompt.x, nearestPrompt.y);
+      ctx.fillText(displayText, nearestPrompt.x, nearestPrompt.y);
       ctx.restore();
     }
 
+    // 16. Floating Dynamic Text Popups (+Wood, +Stone, etc.)
+    state.floatingTexts.forEach(ft => {
+      ctx.save();
+      ctx.font = 'bold 13px "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.strokeStyle = `rgba(0, 0, 0, ${ft.alpha * 0.9})`;
+      ctx.lineWidth = 3;
+      ctx.strokeText(ft.text, ft.x, ft.y);
+      ctx.fillStyle = ft.color;
+      ctx.globalAlpha = ft.alpha;
+      ctx.fillText(ft.text, ft.x, ft.y);
+      ctx.restore();
+    });
+
     ctx.restore(); // Restore Camera
 
-    // 14. Day/Night Color Grading Vignette
+    // 17. Day/Night Color Grading Vignette
     let darknessAlpha = 0;
     if (state.timeOfDay > 0.75) {
       darknessAlpha = Math.min(0.85, (state.timeOfDay - 0.75) * 3.5);
@@ -1516,6 +1938,51 @@
       ctx.fillStyle = `rgba(4, 10, 22, ${darknessAlpha})`;
       ctx.fillRect(0, 0, w, h);
     }
+
+    // 18. Weather: Falling Rain Streaks
+    if (state.weather === 'rain' || state.weather === 'storm') {
+      ctx.strokeStyle = state.weather === 'storm' ? 'rgba(200, 230, 255, 0.35)' : 'rgba(180, 220, 255, 0.25)';
+      ctx.lineWidth = 1.5;
+      const rainCount = state.weather === 'storm' ? 45 : 25;
+      for (let r = 0; r < rainCount; r++) {
+        const rx = ((time * 1.5 + r * 67) % (w + 100)) - 50;
+        const ry = (time * 2.8 + r * 43) % h;
+        ctx.beginPath();
+        ctx.moveTo(rx, ry);
+        ctx.lineTo(rx - 8, ry + 18);
+        ctx.stroke();
+      }
+    }
+
+    // 19. Circling Overhead Seabirds in Screen Space
+    state.seabirds.forEach(b => {
+      const screenX = b.x - state.camera.x;
+      const screenY = b.y - state.camera.y;
+      if (screenX >= -50 && screenX <= w + 50 && screenY >= -50 && screenY <= h + 50) {
+        ctx.save();
+        ctx.translate(screenX, screenY);
+        // Soft ground shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        ctx.beginPath();
+        ctx.ellipse(0, 45, 12, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // White gull with animated flapping wings
+        const wingFlap = Math.sin(b.flapPhase) * 6;
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#37474f';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-12, wingFlap);
+        ctx.lineTo(0, -2);
+        ctx.lineTo(12, wingFlap);
+        ctx.lineTo(0, 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+    });
   }
 
   // --- Animation Frame Loop ---

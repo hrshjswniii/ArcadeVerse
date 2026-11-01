@@ -792,3 +792,351 @@ body::before {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ==========================================================================
+   Responsive Viewport, Modals & Hotspot Alignment Refinements
+   ========================================================================== */
+
+/* Bookshelf Modal Mobile Scaling (height: 100px; width: 40px on mobile vs 140px x 50px on desktop) */
+@media (max-width: 600px) {
+  .bookshelf-shelf {
+    padding: 16px 10px 6px;
+    gap: 8px;
+  }
+  .book {
+    width: 40px;
+    height: 100px;
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* Runic Pedestal UP/DOWN Arrow Minimum 44px Tap Targets */
+.dial-btn {
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  .runic-dials-row {
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .dial-display {
+    width: 60px;
+    height: 60px;
+  }
+  .dial-display svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Cauldron ingredient badges 3-badge row on small screens */
+@media (max-width: 600px) {
+  .cauldron-ingredients-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+  }
+  .ingredient-badge {
+    padding: 4px 8px;
+    font-size: 0.72rem;
+    flex: 1 1 calc(33.333% - 6px);
+    justify-content: center;
+    text-align: center;
+  }
+  .cauldron-pot {
+    width: 110px;
+    height: 95px;
+  }
+  .cauldron-liquid {
+    width: 86px;
+    height: 18px;
+  }
+}
+
+/* Header HUD Single Row on Small Screens */
+@media (max-width: 640px) {
+  .crypt-header {
+    top: 6px;
+    left: 8px;
+    right: 8px;
+    padding: 6px 10px;
+  }
+  .title-icon {
+    width: 22px;
+    height: 22px;
+  }
+  .title-text h1 {
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+  }
+  .title-text p {
+    display: none;
+  }
+  .header-controls {
+    gap: 5px;
+  }
+  .timer-box {
+    padding: 4px 8px;
+    font-size: 0.78rem;
+  }
+  .btn-icon {
+    padding: 5px;
+  }
+  .btn-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+  .escape-tracker {
+    top: 48px;
+    max-width: 95vw;
+    padding: 3px 10px;
+  }
+  .escape-pill {
+    font-size: 0.62rem;
+    padding: 1px 6px;
+  }
+  .escape-text {
+    font-size: 0.72rem;
+  }
+}
+
+/* Inventory Dock on Mobile (< 500px): Horizontal swipeable row with badge counters */
+@media (max-width: 500px) {
+  .inventory-panel {
+    bottom: 8px;
+    padding: 5px 10px;
+    gap: 6px;
+    max-width: 98vw;
+    flex-direction: column;
+    align-items: center;
+  }
+  .inventory-title {
+    display: none;
+  }
+  .inventory-slots {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    justify-content: center;
+    padding: 2px;
+  }
+  .inv-slot {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    flex-shrink: 0;
+  }
+  .inv-slot svg {
+    width: 22px;
+    height: 22px;
+  }
+  .inventory-hint {
+    font-size: 0.68rem;
+    text-align: center;
+    max-width: 90vw;
+  }
+  .modal-box {
+    max-height: 85vh;
+  }
+  .modal-header {
+    padding: 10px 14px;
+  }
+  .modal-header h3 {
+    font-size: 0.92rem;
+  }
+  .modal-body {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    max-height: calc(85vh - 90px);
+  }
+  .modal-footer {
+    padding: 8px 14px;
+  }
+}
+
+/* Modal double-scroll prevention */
+.modal-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-box {
+  overflow: hidden;
+}
+
+/* Hotspot hit testing touch enhancements */
+@media (pointer: coarse) {
+  .hotspot {
+    min-width: 32px;
+    min-height: 32px;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .hotspot,
+  .cauldron-liquid {
+    animation: none !important;
+  }
+  .modal-box {
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   Ultrawide & High-Aspect Letterbox Hotspot Alignment Enforcements
+   ========================================================================== */
+
+/* Aspect container stability */
+.room-stage {
+  touch-action: none;
+  contain: layout size;
+}
+
+/* Scrollbar styling for modal body to avoid double scrollbars */
+.modal-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #633391;
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Dial button active response */
+.dial-btn:active {
+  transform: scale(0.92);
+  background: var(--accent-orange);
+  color: #000;
+}
+
+/* Touch feedback for books */
+.book:active {
+  filter: brightness(1.35);
+}
+
+/* Inventory slot active selection cue */
+.inv-slot:active {
+  transform: scale(0.95);
+}
+
+/* High contrast support */
+@media (forced-colors: active) {
+  .crypt-header,
+  .escape-tracker,
+  .inventory-panel,
+  .modal-box,
+  .hotspot {
+    border: 2px solid ButtonText !important;
+  }
+}
+
+/* Additional Responsive Layout Guards & Clean Touch Handlers */
+.hotspot:focus-visible {
+  outline: 2px solid #ff7700;
+  outline-offset: 4px;
+}
+
+.crypt-toast {
+  letter-spacing: 0.03em;
+  will-change: transform, opacity;
+}
+
+.modal-header h3 svg {
+  filter: drop-shadow(0 0 6px rgba(255, 119, 0, 0.4));
+}
+
+.stat-item {
+  min-width: 65px;
+  text-align: center;
+}
+
+/* Ensure no text selection on game screen */
+.crypt-header,
+.inventory-panel,
+.bookshelf-shelf,
+.runic-dials-row,
+.cauldron-interactive {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* High DPI canvas sharpness calibration */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .hotspot-label {
+    font-size: 0.68rem;
+  }
+}
+
+/* Compact mobile modal button row */
+@media (max-width: 480px) {
+  .modal-footer {
+    flex-direction: column-reverse;
+    gap: 6px;
+  }
+  .modal-footer button {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 12px;
+  }
+}
+
+/* Additional Fluid Typography & Spacing Calibration */
+.inventory-panel {
+  box-sizing: border-box;
+}
+
+.modal-box {
+  box-sizing: border-box;
+}
+
+.bookshelf-shelf {
+  box-sizing: border-box;
+}
+
+/* Portrait vs Landscape mobile tuning */
+@media (max-height: 480px) and (orientation: landscape) {
+  .crypt-header {
+    top: 4px;
+    padding: 4px 8px;
+  }
+  .title-text h1 {
+    font-size: 0.72rem;
+  }
+  .escape-tracker {
+    top: 36px;
+    padding: 2px 8px;
+  }
+  .inventory-panel {
+    bottom: 4px;
+    padding: 3px 8px;
+  }
+  .inv-slot {
+    width: 36px;
+    height: 36px;
+  }
+  .modal-box {
+    max-height: 94vh;
+  }
+  .modal-body {
+    max-height: calc(94vh - 75px);
+    padding: 8px 12px;
+  }
+}

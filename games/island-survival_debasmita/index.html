@@ -89,13 +89,13 @@
   </header>
 
   <!-- Floating Quest & Objective Guide -->
-  <div class="quest-tracker" id="questTracker">
+  <div class="quest-tracker" id="questTracker" aria-live="polite" role="region" aria-label="Current Mission Objective">
     <span class="quest-pill">MISSION</span>
     <span class="quest-text" id="questText">Gather 4 Wood & 3 Stones (Chop Trees / Mine Rocks with [SPACE] or by Clicking)</span>
   </div>
 
   <!-- Touch On-Screen Controls -->
-  <div class="touch-container">
+  <div class="touch-container" aria-label="Mobile Touch Ergonomic Controls">
     <div class="touch-dpad">
       <button class="dpad-btn dpad-up" id="btnUp">UP</button>
       <button class="dpad-btn dpad-left" id="btnLeft">LEFT</button>
@@ -109,7 +109,7 @@
   </div>
 
   <!-- Floating Sleek Bottom Hotbar -->
-  <footer class="hud-bottombar">
+  <footer class="hud-bottombar" aria-label="Survival Resource & Tool Hotbar">
     <button class="hotbar-btn btn-craft" id="btnOpenCrafting">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
