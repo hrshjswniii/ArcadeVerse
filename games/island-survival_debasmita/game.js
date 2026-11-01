@@ -2029,11 +2029,3 @@
 
   updateUI();
 })();
-
-  // Dynamic screen resize handling for touch HUD recalculation
-  window.addEventListener('resize', () => {
-    if (state && state.canvas) {
-      state.canvas.width = window.innerWidth;
-      state.canvas.height = window.innerHeight;
-    }
-  }, { passive: true });
