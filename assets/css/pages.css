@@ -674,6 +674,19 @@
   color: #0f172a;
 }
 
+/* Inline code tags in Light Mode (docs and FAQs) */
+[data-theme="light"] code:not(.code-pre code),
+[data-theme="light"] .faq-answer-text code,
+[data-theme="light"] .docs-content code,
+[data-theme="light"] .docs-section code,
+[data-theme="light"] .docs-callout code,
+[data-theme="light"] .storage-keys-table td code {
+  background: #f1f5f9 !important;
+  color: #0284c7 !important;
+  border-color: #cbd5e1 !important;
+  font-weight: 600;
+}
+
 [data-theme="light"] .btn-copy-code {
   color: #334155;
   border-color: #cbd5e1;

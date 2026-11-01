@@ -435,7 +435,6 @@
     ensureBatLoader();
     initAmbientParticles();
     initAmbientBackgroundBats();
-    init3DTilt();
     wireHalloweenInteractions();
   }
 
