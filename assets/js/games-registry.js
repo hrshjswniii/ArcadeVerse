@@ -94,6 +94,22 @@ const GAMES_REGISTRY = [
     "featured": true
   },
   {
+    "id": "code-breaker_babin",
+    "title": "Cryptic Code Breaker: Mastermind Terminal",
+    "category": "Puzzle / Logic",
+    "lucideIcon": "gamepad-2",
+    "description": "Crack randomized security cipher sequences using colorblind-friendly feedback pegs in a rogue AI terminal.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/code-breaker_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "cosmic-orbit-slingshot_babin",
     "title": "Cosmic Orbit Slingshot",
     "category": "Physics",
@@ -940,7 +956,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 238,
+    "commits": 239,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -960,8 +976,8 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "Babin123456",
     "avatarInitial": "B",
     "role": "Arcade Developer (NSOC '26)",
-    "commits": 155,
-    "gamesCount": 27,
+    "commits": 156,
+    "gamesCount": 28,
     "mechanicsBonus": 2,
     "platformPRs": 29,
     "qualityPRs": 1,
@@ -969,6 +985,7 @@ const CONTRIBUTORS_REGISTRY = [
     "contributions": [
       "Chrono-Shift: Temporal Paradox",
       "Cosmic Orbit Slingshot",
+      "Cryptic Code Breaker: Mastermind Terminal",
       "Cryptic Wordle Hack",
       "Cyber Block Matrix",
       "Cyber Brick Breaker",
