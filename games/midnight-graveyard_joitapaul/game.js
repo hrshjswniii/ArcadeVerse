@@ -13,6 +13,7 @@
   const energyMeter = document.getElementById("energy-meter");
   const gameStatus = document.getElementById("game-status");
   const lanternButton = document.getElementById("lantern-button");
+  const rechargeButton = document.getElementById("recharge-button");
 
   const tileSize = 40;
   const grid = [
@@ -579,6 +580,9 @@
   });
   document.getElementById("help-button").addEventListener("click", showInstructions);
   document.getElementById("restart-button").addEventListener("click", resetRun);
+  rechargeButton.addEventListener("click", () => {
+    if (state === "playing") rechargeLantern();
+  });
   lanternButton.addEventListener("click", () => {
     if (state !== "playing") return;
     lanternOn = !lanternOn && energy > 0;

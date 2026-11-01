@@ -374,6 +374,11 @@ kbd {
   color: #aab29e;
 }
 
+.recharge-button {
+  border-color: #82704b;
+  color: #e7d59f;
+}
+
 .touch-controls {
   display: none;
   align-items: center;
@@ -469,6 +474,20 @@ kbd {
 
   .touch-controls {
     display: flex;
+  }
+
+  .game-footer {
+    flex-wrap: wrap;
+    padding: 6px 0;
+  }
+
+  #game-status {
+    flex: 1 1 100%;
+  }
+
+  .recharge-button,
+  .lantern-toggle {
+    flex: 1;
   }
 
   .game-overlay {
