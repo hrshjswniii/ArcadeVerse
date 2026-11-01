@@ -8,7 +8,7 @@
 </head>
 <body>
   <!-- Header / Navigation HUD -->
-  <header class="crypt-header">
+  <header class="crypt-header" aria-label="Witch Crypt Escape Header">
     <div class="title-area">
       <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 2l-2 2m-1-1l-3 3m2 8A6 6 0 1 1 5 8a6 6 0 0 1 12 6z"></path>
@@ -47,7 +47,7 @@
   </header>
 
   <!-- Floating Escape Tracker -->
-  <div class="escape-tracker" id="escapeTracker">
+  <div class="escape-tracker" id="escapeTracker" aria-live="polite" role="region" aria-label="Crypt Escape Guide">
     <span class="escape-pill">GUIDE</span>
     <span class="escape-text" id="escapeText">Step 1: Inspect the Bookshelf on the left. Pull books: Blood, Dusk, Vine, Void.</span>
   </div>
@@ -135,7 +135,7 @@
     </div>
 
     <!-- Bottom Inventory Panel -->
-    <div class="inventory-panel">
+    <div class="inventory-panel" aria-label="Crypt Bag Inventory">
       <div class="inventory-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>

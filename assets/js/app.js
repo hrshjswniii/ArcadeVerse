@@ -518,12 +518,14 @@ document.addEventListener("DOMContentLoaded", () => {
     randomGameBtn.addEventListener("click", launchRandomGame);
   }
 
-  // Halloween cards Play Now buttons click handler
+  // Halloween cards Play Now buttons click handler (delegates to exclusive Halloween bat loader / new tab)
   document.querySelectorAll(".btn-halloween-play").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       const gameId = btn.getAttribute("data-game-id");
-      if (typeof GAMES_REGISTRY !== "undefined") {
+      if (typeof window.launchHalloweenGame === "function") {
+        window.launchHalloweenGame(gameId);
+      } else if (typeof GAMES_REGISTRY !== "undefined") {
         const game = GAMES_REGISTRY.find((g) => g.id === gameId);
         if (game) {
           openGameModal(game, btn);
