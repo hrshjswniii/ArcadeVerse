@@ -846,6 +846,22 @@ const GAMES_REGISTRY = [
     "difficulty": "Intermediate"
   },
   {
+    "id": "quantum-slide_babin",
+    "title": "Quantum Slide: 15-Matrix Shift",
+    "category": "Puzzle / Logic",
+    "lucideIcon": "gamepad-2",
+    "description": "Rearrange scrambled cyber-chips into sequential order on a glowing circuit matrix with guaranteed solvable boards.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/quantum-slide_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "quantum-sokoban_babin",
     "title": "Quantum Sokoban",
     "category": "Puzzle",
@@ -972,7 +988,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 240,
+    "commits": 241,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -992,8 +1008,8 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "Babin123456",
     "avatarInitial": "B",
     "role": "Arcade Developer (NSOC '26)",
-    "commits": 157,
-    "gamesCount": 29,
+    "commits": 158,
+    "gamesCount": 30,
     "mechanicsBonus": 2,
     "platformPRs": 29,
     "qualityPRs": 1,
@@ -1023,6 +1039,7 @@ const CONTRIBUTORS_REGISTRY = [
       "Neon Wave Matcher",
       "Quantum 2048",
       "Quantum Minesweeper",
+      "Quantum Slide: 15-Matrix Shift",
       "Quantum Sokoban",
       "Space Invaders 2026",
       "Synth-Wave Simon Says",
