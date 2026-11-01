@@ -7,7 +7,7 @@
 (() => {
   'use strict';
 
-  // --- SVG Icons (Zero Unicode Emojis) ---
+  // --- SVG Icons (Strictly Zero Unicode Emojis) ---
   const SVG_ICONS = {
     brass_key: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1-1l-3 3m2 8A6 6 0 1 1 5 8a6 6 0 0 1 12 6z"></path><circle cx="9" cy="14" r="1.5"></circle></svg>',
     silver_key: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="M11.5 11.5L22 1"></path><path d="M18 5l2 2"></path></svg>',
@@ -35,7 +35,8 @@
     constructor() {
       this.ctx = null;
       this.muted = false;
-      this.heartbeatInterval = null;
+      this.breathingOsc = null;
+      this.breathingGain = null;
     }
 
     init() {
@@ -87,7 +88,6 @@
       if (this.muted) return;
       this.init();
       if (!this.ctx) return;
-      // Low boom
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = 'triangle';
@@ -105,7 +105,6 @@
       if (this.muted) return;
       this.init();
       if (!this.ctx) return;
-      // Thump-thump
       [0, 0.18].forEach(delay => {
         setTimeout(() => {
           if (!this.ctx) return;
@@ -122,6 +121,26 @@
           osc.stop(this.ctx.currentTime + 0.12);
         }, delay * 1000);
       });
+    }
+
+    playBreathing() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      // Inhaling and exhaling white noise / filtered sine wave
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(50, this.ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(110, this.ctx.currentTime + 0.8);
+      osc.frequency.linearRampToValueAtTime(45, this.ctx.currentTime + 1.6);
+      gain.gain.setValueAtTime(0.02, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.12, this.ctx.currentTime + 0.8);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.6);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 1.6);
     }
 
     playWhisper() {
@@ -146,7 +165,6 @@
       if (this.muted) return;
       this.init();
       if (!this.ctx) return;
-      // Haunting minor chime melody: E5, G5, B5, A5, G5, E5
       const notes = [659.25, 783.99, 987.77, 880.00, 783.99, 659.25];
       notes.forEach((freq, idx) => {
         setTimeout(() => {
@@ -245,7 +263,6 @@
 
   // Helper: Initialize Dynamic Weather & Particles
   function initAtmosphere() {
-    // Dust motes
     state.dustMotes = [];
     for (let i = 0; i < 40; i++) {
       state.dustMotes.push({
@@ -259,7 +276,6 @@
       });
     }
 
-    // Autumn porch leaves
     state.porchLeaves = [];
     const leafColors = ['#c2410c', '#ea580c', '#b45309', '#78350f', '#991b1b'];
     for (let i = 0; i < 20; i++) {
@@ -275,7 +291,6 @@
       });
     }
 
-    // Rain streaks
     state.rainStreaks = [];
     for (let i = 0; i < 55; i++) {
       state.rainStreaks.push({
@@ -292,6 +307,37 @@
   // --- DOM References ---
   const canvas = document.getElementById('mansionCanvas');
   const ctx = canvas.getContext('2d');
+  const hotspotsLayer = document.getElementById('hotspotsLayer');
+  const lightningFx = document.getElementById('lightningFx');
+  const panicVignette = document.getElementById('panicVignette');
+  const paranormalBanner = document.getElementById('paranormalBanner');
+  const investigationReticle = document.getElementById('investigationReticle');
+  const reticleText = document.getElementById('reticleText');
+  const wardrobeSlitOverlay = document.getElementById('wardrobeSlitOverlay');
+  const sanityBar = document.getElementById('sanityBar');
+  const batteryBar = document.getElementById('batteryBar');
+  const threatBadge = document.getElementById('threatBadge');
+  const caseTracker = document.getElementById('caseTracker');
+  const caseText = document.getElementById('caseText');
+  const btnFlashlight = document.getElementById('btnFlashlight');
+  const lightLabel = document.getElementById('lightLabel');
+  const btnHide = document.getElementById('btnHide');
+  const hideLabel = document.getElementById('hideLabel');
+  const btnJournal = document.getElementById('btnJournal');
+  const inventoryTray = document.getElementById('inventoryTray');
+  const dockHint = document.getElementById('dockHint');
+
+  // Modals
+  const modalHelp = document.getElementById('modalHelp');
+  const btnStartGame = document.getElementById('btnStartGame');
+  const modalJournal = document.getElementById('modalJournal');
+  const journalContent = document.getElementById('journalContent');
+  const modalSafe = document.getElementById('modalSafe');
+  const modalBreaker = document.getElementById('modalBreaker');
+  const modalAltar = document.getElementById('modalAltar');
+  const modalEnding = document.getElementById('modalEnding');
+  const endingTitle = document.getElementById('endingTitle');
+  const endingText = document.getElementById('endingText');
 
   function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -299,34 +345,34 @@
   }
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
-  const sanityBar = document.getElementById('sanityBar');
-  const batteryBar = document.getElementById('batteryBar');
-  const threatBadge = document.getElementById('threatBadge');
-  const caseText = document.getElementById('caseText');
-  const panicVignette = document.getElementById('panicVignette');
-  const lightningFx = document.getElementById('lightningFx');
-  const paranormalBanner = document.getElementById('paranormalBanner');
-  const dockHint = document.getElementById('dockHint');
-  const inventoryTray = document.getElementById('inventoryTray');
-  const hotspotsLayer = document.getElementById('hotspotsLayer');
-  const btnFlashlight = document.getElementById('btnFlashlight');
-  const lightLabel = document.getElementById('lightLabel');
-  const btnHide = document.getElementById('btnHide');
-  const hideLabel = document.getElementById('hideLabel');
-  const btnJournal = document.getElementById('btnJournal');
 
-  // Modals
-  const modalJournal = document.getElementById('modalJournal');
-  const journalContent = document.getElementById('journalContent');
-  const modalSafe = document.getElementById('modalSafe');
-  const modalBreaker = document.getElementById('modalBreaker');
-  const modalAltar = document.getElementById('modalAltar');
-  const modalHelp = document.getElementById('modalHelp');
-  const modalEnding = document.getElementById('modalEnding');
-  const endingTitle = document.getElementById('endingTitle');
-  const endingText = document.getElementById('endingText');
+  // --- Progressive Step-by-Step Case Tracker ---
+  function updateCaseTracker() {
+    if (!caseText) return;
+    if (!state.porchKeyFound) {
+      caseText.textContent = 'TASK 1/5: Search the rain-soaked porch to find the brass entrance key.';
+    } else if (!state.foyerDoorUnlocked) {
+      caseText.textContent = 'TASK 1/5: Select Rusty Brass Key in inventory and unlock the Front Entrance.';
+    } else if (!state.safeUnlocked) {
+      caseText.textContent = "TASK 2/5: Explore the Living Room and decode Archibald's safe behind the portrait (Year: 1898).";
+    } else if (!state.breakerEngaged) {
+      caseText.textContent = 'TASK 3/5: Enter the Crypt and align the 4 auxiliary breaker switches to restore power.';
+    } else if (!state.altarCleansed) {
+      const missing = [];
+      if (!state.inventory.includes('locket')) missing.push("Eleanor's Locket (Bedroom)");
+      if (!state.inventory.includes('matches')) missing.push('Matchbox (Kitchen)');
+      if (!state.inventory.includes('salt')) missing.push('Consecrated Salt (Pantry)');
+      if (missing.length > 0) {
+        caseText.textContent = `TASK 4/5: Gather ritual items: ${missing.join(', ')}.`;
+      } else {
+        caseText.textContent = "TASK 4/5: Place Eleanor's Locket, Light Candles, and Cast Salt at the Crypt Altar.";
+      }
+    } else {
+      caseText.textContent = 'TASK 5/5: The curse is broken! Escape through the Crypt Storm Hatch to survive!';
+    }
+  }
 
-  // --- Room Definitions & Hotspots ---
+  // --- Room Configuration & Hotspots ---
   const ROOM_CONFIGS = {
     porch: {
       name: 'Entrance Porch',
@@ -345,6 +391,7 @@
               addItem('brass_key');
               addJournalEntry('Torn Welcome Note (1898)', '"If you seek shelter from the storm, the key rests beneath the moss. But know this: once the threshold is crossed, the manor does not let go."');
               setHint('You found a Rusty Brass Key beneath the moldy doormat!');
+              updateCaseTracker();
             } else {
               setHint('Nothing else beneath the damp mat.');
             }
@@ -364,6 +411,7 @@
                 unlockRoom('foyer');
                 sound.playCreak();
                 setHint('The brass key turns with a loud heavy click! The front entrance swings open.');
+                updateCaseTracker();
                 switchRoom('foyer');
               } else {
                 sound.playCreak();
@@ -489,7 +537,7 @@
           left: '45%',
           width: '95px',
           height: '95px',
-          tag: 'Family Oil Portrait',
+          tag: 'Family Oil Portrait & Wall Safe',
           onClick: () => {
             openModal(modalSafe);
           }
@@ -587,13 +635,14 @@
           left: '18%',
           width: '18%',
           height: '19%',
-          tag: 'Prep Counter',
+          tag: 'Prep Counter Drawer',
           onClick: () => {
             if (!state.inventory.includes('matches')) {
               addItem('matches');
               addItem('batteries');
               state.battery = 100;
               setHint('Found a Box of Matchsticks and fresh Flashlight Batteries!');
+              updateCaseTracker();
             } else {
               setHint('The prep counter is cleared out.');
             }
@@ -605,13 +654,14 @@
           left: '48%',
           width: '12%',
           height: '34%',
-          tag: 'Locked Pantry',
+          tag: 'Locked Pantry Cupboard',
           onClick: () => {
             if (!state.saltFound) {
               state.saltFound = true;
               addItem('salt');
               addJournalEntry('Alchemical Sanctification', '"Blessed salt creates an impenetrable boundary against the entity. Scatter it across the pentagram."');
               setHint('You unlocked the pantry and found a jar of Consecrated Holy Salt!');
+              updateCaseTracker();
             } else {
               setHint('The pantry shelves are now empty.');
             }
@@ -661,6 +711,7 @@
               addItem('tome');
               addJournalEntry("Eleanor's Keepsake", '"Father gave me this locket on my tenth birthday in 1898. He swore it would keep the dark shadows away forever."');
               setHint("The music box plays Eleanor's lullaby and opens, revealing her Golden Locket and the Tome of Shadows!");
+              updateCaseTracker();
             } else {
               sound.playMusicBox();
               setHint('The delicate music box chimes softly in the dark.');
@@ -698,7 +749,7 @@
           left: '42%',
           width: '14%',
           height: '20%',
-          tag: 'Demonic Pentagram Altar',
+          tag: 'Crypt Pentagram Altar',
           onClick: () => openModal(modalAltar)
         },
         {
@@ -749,6 +800,7 @@
 
     dockHint.textContent = ROOM_CONFIGS[roomId].hint;
     renderHotspots();
+    updateCaseTracker();
   }
 
   function unlockRoom(roomId) {
@@ -772,6 +824,7 @@
       el.style.left = hs.left;
       el.style.width = hs.width;
       el.style.height = hs.height;
+      el.setAttribute('data-tag', hs.tag);
 
       el.innerHTML = `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -786,9 +839,34 @@
         hs.onClick();
       });
 
+      // Reticle Hover Trigger
+      el.addEventListener('mouseenter', () => {
+        if (!investigationReticle) return;
+        investigationReticle.classList.add('active');
+        if (state.selectedItem) {
+          reticleText.textContent = `[USE: ${ITEM_NAMES[state.selectedItem] || state.selectedItem}] ${hs.tag}`;
+        } else {
+          reticleText.textContent = `[EXAMINE] ${hs.tag}`;
+        }
+      });
+
+      el.addEventListener('mouseleave', () => {
+        if (investigationReticle) {
+          investigationReticle.classList.remove('active');
+        }
+      });
+
       hotspotsLayer.appendChild(el);
     });
   }
+
+  // --- Dynamic Reticle Position Tracking ---
+  window.addEventListener('mousemove', e => {
+    if (investigationReticle) {
+      investigationReticle.style.left = `${e.clientX}px`;
+      investigationReticle.style.top = `${e.clientY}px`;
+    }
+  }, { passive: true });
 
   // --- Inventory System ---
   function updateInventoryUI() {
@@ -810,7 +888,7 @@
             setHint('Deselected item.');
           } else {
             state.selectedItem = itemKey;
-            setHint(`Selected: ${ITEM_NAMES[itemKey]}. Tap an object to use it.`);
+            setHint(`Selected: ${ITEM_NAMES[itemKey]}. Tap an object in the room to use it.`);
           }
           updateInventoryUI();
         });
@@ -819,10 +897,11 @@
       }
       inventoryTray.appendChild(slot);
     }
+    updateCaseTracker();
   }
 
   function addItem(itemKey) {
-    const itemName = ITEM_DATA[itemKey] ? ITEM_DATA[itemKey].name : itemKey;
+    const itemName = (typeof ITEM_NAMES !== 'undefined' && ITEM_NAMES[itemKey]) ? ITEM_NAMES[itemKey] : itemKey;
     spawnFloatText('+ ' + itemName, '#38ef7d', 500, 280);
     if (!state.inventory.includes(itemKey)) {
       state.inventory.push(itemKey);
@@ -865,7 +944,7 @@
     });
   }
 
-  // --- Paranormal & Threat Encounter Loop ---
+  // --- Paranormal Threat & Wardrobe Concealment ---
   function triggerLightning() {
     sound.playThunder();
     lightningFx.classList.add('flash');
@@ -882,7 +961,7 @@
     panicVignette.classList.add('active');
     btnHide.classList.add('urgent');
     paranormalBanner.classList.add('active');
-    state.dangerCountdown = 6; // 6 seconds to hide or take sanity hit
+    state.dangerCountdown = 6;
   }
 
   function resolvePanic(survived) {
@@ -902,25 +981,28 @@
         triggerEnding('bad');
       }
     } else {
-      setHint('You held your breath in silence... the cold presence drifted away.');
+      setHint('You held your breath in silence inside the wardrobe... the cold presence drifted away.');
     }
   }
 
-  // Hide button toggle
+  // Hide button toggle with Wardrobe Eye-Slit View
   btnHide.addEventListener('click', () => {
     sound.playClick();
     state.isHiding = !state.isHiding;
     if (state.isHiding) {
-      hideLabel.textContent = 'Un-Hide';
+      hideLabel.textContent = 'Un-Hide [H]';
       btnHide.style.background = '#3c1854';
+      if (wardrobeSlitOverlay) wardrobeSlitOverlay.classList.add('active');
+      sound.playBreathing();
       if (state.threatLevel === 'danger') {
         setTimeout(() => {
           resolvePanic(true);
-        }, 1200);
+        }, 1400);
       }
     } else {
-      hideLabel.textContent = 'Hide';
+      hideLabel.textContent = 'Hide [H]';
       btnHide.style.background = '';
+      if (wardrobeSlitOverlay) wardrobeSlitOverlay.classList.remove('active');
     }
   });
 
@@ -928,7 +1010,7 @@
   btnFlashlight.addEventListener('click', () => {
     sound.playClick();
     state.flashlightOn = !state.flashlightOn;
-    lightLabel.textContent = state.flashlightOn ? 'Light: ON' : 'Light: OFF';
+    lightLabel.textContent = state.flashlightOn ? 'Light: ON [F]' : 'Light: OFF [F]';
   });
 
   // --- Safe Puzzle (Living Room) ---
@@ -969,6 +1051,7 @@
       safeStatus.textContent = 'CLACK! The heavy safe door swings open! The Library is now unlocked!';
       addJournalEntry('Blackwood Deed of 1898', '"To the master of the manor: the library holds the secret mechanism to enter the crypt below."');
       setHint('You unlocked the wall safe and discovered access to the Library!');
+      updateCaseTracker();
     } else {
       sound.playCreak();
       safeStatus.textContent = 'The dial clicks with resistance. Incorrect combination.';
@@ -1005,6 +1088,7 @@
       triggerLightning();
       breakerStatus.textContent = 'POWER RESTORED! The electromagnetic lock on the Storm Door buzzes open!';
       setHint('The basement lights spark to life! The storm escape door is now powered and unlocked.');
+      updateCaseTracker();
     } else {
       sound.playJumpscare();
       breakerStatus.textContent = 'Sparks shower from the fusebox! Breaker tripped. Try another circuit combination.';
@@ -1031,8 +1115,10 @@
     const hasSalt = state.inventory.includes('salt') || state.selectedItem === 'salt';
 
     if (hasLocket && hasMatches && hasSalt) {
+      state.altarCleansed = true;
       sound.playMusicBox();
       altarStatus.textContent = 'The locket shines with brilliant celestial light! The dark curse dissolves into morning mist!';
+      updateCaseTracker();
       setTimeout(() => {
         closeModal(modalAltar);
         triggerEnding('cursebreaker');
@@ -1089,6 +1175,14 @@
     });
   });
 
+  if (btnStartGame) {
+    btnStartGame.addEventListener('click', () => {
+      sound.init();
+      sound.playClick();
+      closeModal(modalHelp);
+    });
+  }
+
   btnJournal.addEventListener('click', () => openModal(modalJournal));
   document.getElementById('helpBtn').addEventListener('click', () => openModal(modalHelp));
   document.getElementById('btnRestartGame').addEventListener('click', () => window.location.reload());
@@ -1127,7 +1221,7 @@
       state.mousePos.x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
       state.mousePos.y = (e.touches[0].clientY - rect.top) * (canvas.height / rect.height);
     }
-  });
+  }, { passive: true });
 
   // --- Canvas 60 FPS Room Rendering Loop ---
   const VW = 1000;
@@ -1146,13 +1240,11 @@
     state.cameraOffset.x += (targetCamX - state.cameraOffset.x) * 0.08;
     state.cameraOffset.y += (targetCamY - state.cameraOffset.y) * 0.08;
 
-    // Shift hotspots overlay slightly for authentic 2.5D depth
     if (hotspotsLayer) {
       hotspotsLayer.style.transform = `translate(${state.cameraOffset.x * 0.35}px, ${state.cameraOffset.y * 0.35}px)`;
     }
 
     ctx.save();
-    // Apply camera parallax
     ctx.translate(state.cameraOffset.x, state.cameraOffset.y);
     ctx.scale(w / VW, h / VH);
 
@@ -1167,7 +1259,7 @@
       ctx.fillStyle = skyGrad;
       ctx.fillRect(-40, -40, VW + 80, VH + 80);
 
-      // Distant Gnarled Trees with wind sway
+      // Gnarled silhouettes of dead oaks
       ctx.fillStyle = '#08040d';
       for (let i = 20; i < VW + 40; i += 110) {
         const sway = Math.sin(time * 0.0018 + i) * 6;
@@ -1176,7 +1268,6 @@
         ctx.lineTo(i + 8 + sway, 90);
         ctx.lineTo(i + 24 + sway, 360);
         ctx.fill();
-        // Spindly branches
         ctx.strokeStyle = '#08040d';
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -1187,7 +1278,7 @@
         ctx.stroke();
       }
 
-      // Mansion Stone Facade
+      // Weathered Stone Facade
       ctx.fillStyle = '#1c102b';
       ctx.fillRect(180, 30, 600, 520);
       ctx.strokeStyle = '#2d1845';
@@ -1210,7 +1301,6 @@
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Candle flicker inside window
         const cFlicker = Math.sin(time * 0.008 + wx) * 3;
         ctx.fillStyle = '#ffaa32';
         ctx.beginPath();
@@ -1227,7 +1317,7 @@
       ctx.lineWidth = 5;
       ctx.stroke();
 
-      // Front Door Oak Panels
+      // Front Door Oak Panels & Iron Studs
       ctx.fillStyle = '#1e1124';
       ctx.fillRect(415, 170, 130, 220);
       ctx.strokeStyle = '#351c40';
@@ -1236,17 +1326,27 @@
       ctx.strokeRect(425, 290, 48, 85);
       ctx.strokeRect(487, 290, 48, 85);
 
-      // Brass door knocker / handle
+      // Brass knocker & handle
       ctx.fillStyle = '#d4af37';
       ctx.beginPath();
       ctx.arc(445, 280, 4, 0, Math.PI * 2);
       ctx.fill();
 
-      // Stone Porch Steps
+      // Stone Porch Steps with rain puddles
       ctx.fillStyle = '#2a163d';
       ctx.fillRect(150, 430, 660, 110);
       ctx.fillStyle = '#190a29';
       ctx.fillRect(170, 470, 620, 70);
+
+      // Weathered Porch Floorboards lines
+      ctx.strokeStyle = 'rgba(74, 38, 107, 0.4)';
+      ctx.lineWidth = 1.5;
+      for (let px = 170; px <= 790; px += 45) {
+        ctx.beginPath();
+        ctx.moveTo(px, 430);
+        ctx.lineTo(px, 540);
+        ctx.stroke();
+      }
 
       // Porch Doormat
       ctx.fillStyle = state.porchKeyFound ? '#3d2516' : '#2d3319';
@@ -1276,7 +1376,7 @@
       drawPorchLantern(360, 240);
       drawPorchLantern(600, 240);
 
-      // Dynamic Angled Rain Streaks
+      // Angled Rain Streaks
       ctx.strokeStyle = 'rgba(160, 190, 230, 0.28)';
       ctx.lineWidth = 1.2;
       ctx.beginPath();
@@ -1292,7 +1392,7 @@
       });
       ctx.stroke();
 
-      // Dynamic Autumn Leaves Tumbling in Wind
+      // Autumn Leaves Tumbling in Wind
       state.porchLeaves.forEach(leaf => {
         leaf.x += leaf.vx;
         leaf.y += leaf.vy + Math.sin(time * 0.003 + leaf.x) * 0.5;
@@ -1362,9 +1462,8 @@
       ctx.lineTo(660, 310);
       ctx.stroke();
 
-      // --- Animated Grandfather Clock (Left Wall) ---
+      // Grandfather Clock
       const clockX = 325, clockY = 240;
-      // Wood Case
       ctx.fillStyle = '#2e150a';
       ctx.fillRect(clockX - 25, clockY - 110, 50, 220);
       ctx.strokeStyle = '#4a2614';
@@ -1379,7 +1478,7 @@
       ctx.strokeStyle = '#1e1124';
       ctx.stroke();
 
-      // Clock Hands (Minute & Hour)
+      // Minute & Hour hands
       ctx.strokeStyle = '#111';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
@@ -1389,7 +1488,7 @@
       ctx.lineTo(clockX - 5, clockY - 84);
       ctx.stroke();
 
-      // Pendulum Window & Swinging Brass Pendulum
+      // Swinging Brass Pendulum
       ctx.fillStyle = '#110804';
       ctx.fillRect(clockX - 16, clockY - 40, 32, 95);
       ctx.strokeStyle = '#4a2614';
@@ -1411,7 +1510,7 @@
       ctx.fill();
       ctx.restore();
 
-      // --- Swaying Crystal Chandelier (Center Ceiling) ---
+      // Swaying Crystal Chandelier
       const chanSway = Math.sin(time * 0.0015) * 6;
       ctx.strokeStyle = '#d4af37';
       ctx.lineWidth = 2;
@@ -1420,13 +1519,11 @@
       ctx.lineTo(480 + chanSway, 70);
       ctx.stroke();
 
-      // Chandelier Body
       ctx.fillStyle = '#d4af37';
       ctx.beginPath();
       ctx.arc(480 + chanSway, 72, 28, 0, Math.PI);
       ctx.fill();
 
-      // Chandelier Candle Flames
       for (let ci = -2; ci <= 2; ci++) {
         const cx = 480 + chanSway + ci * 14;
         const cy = 60;
@@ -1460,9 +1557,8 @@
       ctx.fillStyle = '#22110c';
       ctx.fillRect(0, 340, VW, VH - 340);
 
-      // --- Roaring Brick Fireplace (Center) ---
-      const fpx = 480, fpy = 270;
       // Fireplace Mantle & Hearth
+      const fpx = 480, fpy = 270;
       ctx.fillStyle = '#1c171e';
       ctx.fillRect(fpx - 90, fpy - 90, 180, 170);
       ctx.strokeStyle = '#382e3c';
@@ -1487,7 +1583,7 @@
       ctx.fillStyle = '#5c2c15';
       ctx.fillRect(fpx - 35, fpy + 54, 70, 10);
 
-      // Multi-layer Animated Procedural Flame Tongues
+      // Multi-layer Animated Flame Tongues
       for (let f = 0; f < 8; f++) {
         const fx = fpx - 36 + f * 10;
         const fh = 26 + Math.sin(time * 0.015 + f * 1.6) * 14 + Math.cos(time * 0.025 + f) * 8;
@@ -1548,12 +1644,11 @@
       ctx.arc(495 + eyeDx, 122 + eyeDy, 3, 0, Math.PI * 2);
       ctx.fill();
 
-      // Vintage Gramophone (Right Side)
+      // Vintage Gramophone
       const gx = 740, gy = 330;
       ctx.fillStyle = '#422115';
       ctx.fillRect(gx - 35, gy - 25, 70, 45);
 
-      // Spinning Vinyl Record
       const spinAngle = (time * 0.004) % (Math.PI * 2);
       ctx.save();
       ctx.translate(gx, gy - 26);
@@ -1571,7 +1666,6 @@
       ctx.fill();
       ctx.restore();
 
-      // Brass Morning Glory Horn
       ctx.fillStyle = '#d4af37';
       ctx.beginPath();
       ctx.moveTo(gx - 10, gy - 26);
@@ -1580,7 +1674,6 @@
       ctx.closePath();
       ctx.fill();
 
-      // Musical resonance waves if playing
       if (state.gramophonePlayed) {
         ctx.strokeStyle = 'rgba(212, 175, 55, 0.5)';
         ctx.lineWidth = 1.5;
@@ -1597,11 +1690,10 @@
       ctx.fillStyle = '#130d1e';
       ctx.fillRect(-20, -20, VW + 40, VH + 40);
 
-      // Floorboards
       ctx.fillStyle = '#1c100a';
       ctx.fillRect(0, 360, VW, VH - 360);
 
-      // Massive Bookshelves
+      // Bookshelves
       ctx.fillStyle = '#261633';
       ctx.fillRect(70, 50, 840, 310);
       for (let y = 110; y <= 350; y += 60) {
@@ -1613,7 +1705,7 @@
         }
       }
 
-      // Arched Victorian Window (Right side)
+      // Arched Victorian Window
       const wx = 760, wy = 70;
       ctx.fillStyle = '#06030a';
       ctx.beginPath();
@@ -1665,20 +1757,106 @@
       ctx.fillRect(480, 280, 125, 90);
 
     // ==========================================
-    // ROOM 5: BEDROOM (Four-Poster & Specter)
+    // ROOM 5: KITCHEN & PANTRY (Rusted Range & Locker)
+    // ==========================================
+    } else if (rm === 'kitchen') {
+      ctx.fillStyle = '#140c11';
+      ctx.fillRect(-20, -20, VW + 40, VH + 40);
+
+      // Damp soot-stained subway tiles backsplash
+      ctx.strokeStyle = 'rgba(64, 40, 52, 0.45)';
+      ctx.lineWidth = 1;
+      for (let y = 60; y < 350; y += 22) {
+        for (let x = 0; x < VW; x += 44) {
+          const offsetX = (Math.floor(y / 22) % 2) * 22;
+          ctx.strokeRect(x + offsetX, y, 44, 22);
+        }
+      }
+
+      // Broken terracotta tile floor
+      ctx.fillStyle = '#1f0e13';
+      ctx.fillRect(0, 350, VW, VH - 350);
+      ctx.strokeStyle = '#2d151c';
+      for (let tx = 0; tx < VW; tx += 60) {
+        ctx.beginPath();
+        ctx.moveTo(tx, 350);
+        ctx.lineTo(tx, VH);
+        ctx.stroke();
+      }
+
+      // Rusted Cast-Iron Cooking Stove
+      ctx.fillStyle = '#22191f';
+      ctx.fillRect(460, 200, 160, 150);
+      ctx.strokeStyle = '#382a33';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(460, 200, 160, 150);
+
+      // Smoldering embers in stove door
+      const stvGlow = ctx.createRadialGradient(540, 280, 5, 540, 280, 50);
+      stvGlow.addColorStop(0, 'rgba(239, 68, 68, 0.45)');
+      stvGlow.addColorStop(1, 'rgba(239, 68, 68, 0)');
+      ctx.fillStyle = stvGlow;
+      ctx.fillRect(500, 240, 80, 80);
+
+      ctx.fillStyle = '#7f1d1d';
+      ctx.fillRect(525, 265, 30, 30);
+
+      // Hanging copper pans & rusted meat cleaver
+      const pansX = [220, 280, 340];
+      pansX.forEach((px, idx) => {
+        const panSway = Math.sin(time * 0.002 + idx) * 3;
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(px, 70);
+        ctx.lineTo(px + panSway, 130);
+        ctx.stroke();
+
+        ctx.fillStyle = idx === 1 ? '#451a03' : '#92400e';
+        ctx.beginPath();
+        ctx.arc(px + panSway, 142, 14, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Wooden Prep Counter & Drawers
+      ctx.fillStyle = '#2c1810';
+      ctx.fillRect(140, 280, 240, 130);
+      ctx.strokeStyle = '#451a03';
+      ctx.strokeRect(140, 280, 240, 130);
+      // Counter drawer handles
+      ctx.fillStyle = '#d4af37';
+      ctx.fillRect(200, 320, 35, 6);
+      ctx.fillRect(290, 320, 35, 6);
+
+      // Pantry Cupboard with brass wire-mesh
+      ctx.fillStyle = '#24141d';
+      ctx.fillRect(470, 90, 140, 105);
+      ctx.strokeStyle = state.saltFound ? '#4ade80' : '#d4af37';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(470, 90, 140, 105);
+      // Wire mesh crisscross
+      ctx.strokeStyle = 'rgba(212, 175, 55, 0.25)';
+      ctx.lineWidth = 1;
+      for (let mx = 480; mx < 600; mx += 15) {
+        ctx.beginPath();
+        ctx.moveTo(mx, 95);
+        ctx.lineTo(mx + 20, 190);
+        ctx.stroke();
+      }
+
+    // ==========================================
+    // ROOM 6: BEDROOM (Four-Poster & Specter)
     // ==========================================
     } else if (rm === 'bedroom') {
       ctx.fillStyle = '#1a0b1c';
       ctx.fillRect(-20, -20, VW + 40, VH + 40);
 
-      // Floorboards
       ctx.fillStyle = '#180a14';
       ctx.fillRect(0, 340, VW, VH - 340);
 
       // Four-poster Bed with velvet canopy
       ctx.fillStyle = '#2d1430';
       ctx.fillRect(430, 210, 240, 150);
-      // Velvet Headboard & Curtains
       ctx.fillStyle = '#4a1532';
       ctx.fillRect(430, 140, 240, 70);
       ctx.fillStyle = '#3a1228';
@@ -1689,7 +1867,7 @@
       ctx.fillRect(430, 110, 14, 250);
       ctx.fillRect(656, 110, 14, 250);
 
-      // Vanity Dresser & Oval Mirror (Left)
+      // Vanity Dresser & Oval Mirror
       ctx.fillStyle = '#261219';
       ctx.fillRect(170, 270, 150, 100);
       ctx.strokeStyle = '#e5a93b';
@@ -1703,7 +1881,6 @@
       ctx.fillStyle = mirrorGlow;
       ctx.fillRect(202, 162, 86, 106);
 
-      // Ghostly specter in mirror
       const ghostPulse = 0.2 + Math.sin(time * 0.0025) * 0.18;
       ctx.fillStyle = `rgba(216, 180, 254, ${ghostPulse})`;
       ctx.beginPath();
@@ -1727,13 +1904,13 @@
       }
 
     // ==========================================
-    // ROOM 6: BASEMENT / CRYPT (Water Ripples & Altar)
+    // ROOM 7: BASEMENT / CRYPT (Water Ripples & Altar)
     // ==========================================
     } else if (rm === 'basement') {
       ctx.fillStyle = '#060408';
       ctx.fillRect(-20, -20, VW + 40, VH + 40);
 
-      // Rough stone masonry
+      // Rough stone masonry flagstones
       ctx.strokeStyle = 'rgba(78, 41, 116, 0.2)';
       ctx.lineWidth = 2;
       for (let y = 50; y < VH; y += 45) {
@@ -1756,7 +1933,7 @@
         state.waterDrops.push({ x: 260 + (Math.random() - 0.5) * 15, y: 57, vy: 4.5 });
       }
 
-      // Update & render falling drops
+      // Falling water drops
       ctx.fillStyle = '#67e8f9';
       for (let i = state.waterDrops.length - 1; i >= 0; i--) {
         const d = state.waterDrops[i];
@@ -1771,7 +1948,7 @@
         }
       }
 
-      // Floor puddle with expanding concentric ripples
+      // Floor puddle with expanding ripples
       const pudGlow = ctx.createRadialGradient(260, 480, 5, 260, 480, 50);
       pudGlow.addColorStop(0, 'rgba(6, 182, 212, 0.25)');
       pudGlow.addColorStop(1, 'rgba(6, 182, 212, 0)');
@@ -1797,20 +1974,18 @@
         ctx.restore();
       }
 
-      // --- Occult Pentagram Ritual Altar (Center) ---
+      // Occult Pentagram Ritual Altar
       const altX = 500, altY = 380;
       const altColor = state.altarCleansed ? '#38ef7d' : '#ef4444';
       const altGlow = state.altarCleansed ? 'rgba(56, 239, 125, ' : 'rgba(239, 68, 68, ';
       const runePulse = 0.55 + Math.sin(time * 0.004) * 0.25;
 
-      // Altar Circle Aura
       const aGrad = ctx.createRadialGradient(altX, altY, 20, altX, altY, 110);
       aGrad.addColorStop(0, altGlow + (0.35 * runePulse) + ')');
       aGrad.addColorStop(1, altGlow + '0)');
       ctx.fillStyle = aGrad;
       ctx.fillRect(altX - 120, altY - 80, 240, 160);
 
-      // Floor Sigil Rings & Pentagram
       ctx.save();
       ctx.translate(altX, altY);
       ctx.scale(1, 0.45);
@@ -1820,7 +1995,6 @@
       ctx.arc(0, 0, 75, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Inner Inscribed 5-point Star
       ctx.beginPath();
       for (let p = 0; p < 5; p++) {
         const a1 = (p * 4 * Math.PI) / 5 - Math.PI / 2;
@@ -1833,7 +2007,7 @@
       ctx.stroke();
       ctx.restore();
 
-      // Hanging Inspection Bulb with dynamic swing
+      // Hanging Inspection Bulb
       const bulbSwing = Math.sin(time * 0.0022) * 32;
       ctx.strokeStyle = '#555';
       ctx.lineWidth = 2;
@@ -1864,8 +2038,7 @@
     const flX = state.mousePos.x;
     const flY = state.mousePos.y;
 
-    if (state.flashlightOn && state.battery > 0) {
-      // Voltage jitter when battery is low or panic is active
+    if (state.flashlightOn && state.battery > 0 && !state.isHiding) {
       const isLowBattery = state.battery < 30;
       const isFlickering = (isLowBattery && Math.random() < 0.12) || (state.threatLevel === 'danger' && Math.random() < 0.2);
       const beamAlpha = isFlickering ? 0.02 : 0.08;
@@ -1901,7 +2074,7 @@
         }
       });
     } else {
-      // Total darkness with minimal eye dilation
+      // Total darkness or hiding inside wardrobe
       const darkGrad = ctx.createRadialGradient(w / 2, h / 2, 30, w / 2, h / 2, Math.min(w, h) * 0.52);
       darkGrad.addColorStop(0, 'rgba(0,0,0,0.88)');
       darkGrad.addColorStop(1, 'rgba(0,0,0,0.99)');
@@ -1919,6 +2092,15 @@
       redVig.addColorStop(1, `rgba(185, 28, 28, ${bloodAlpha})`);
       ctx.fillStyle = redVig;
       ctx.fillRect(0, 0, w, h);
+    }
+
+    // Subtle Analog Psychological Horror Grain Noise Pass
+    const grainCount = 35;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+    for (let g = 0; g < grainCount; g++) {
+      const gx = Math.random() * w;
+      const gy = Math.random() * h;
+      ctx.fillRect(gx, gy, 2, 2);
     }
 
     // Render Floating Text Notifications
@@ -1956,12 +2138,20 @@
     }
   });
 
+  // Mobile touch gesture handler for active room navigation sync
+  window.addEventListener('resize', () => {
+    const activeTab = document.querySelector('.room-tab.active');
+    if (activeTab && activeTab.scrollIntoView) {
+      activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }, { passive: true });
+
   // --- Real-Time Update Tick (1000ms) ---
   setInterval(() => {
     if (state.gameEnded) return;
 
     // Battery Decay
-    if (state.flashlightOn && state.battery > 0) {
+    if (state.flashlightOn && state.battery > 0 && !state.isHiding) {
       state.battery = Math.max(0, state.battery - 0.4);
       batteryBar.style.width = `${state.battery}%`;
       if (state.battery <= 0) {
@@ -1978,7 +2168,7 @@
       if (state.sanity <= 0) triggerEnding('bad');
     }
 
-    // Paranormal Timer
+    // Paranormal Threat Timer
     state.threatTimer++;
     if (state.threatTimer > 18 && state.threatLevel === 'quiet') {
       state.threatTimer = 0;
@@ -1999,15 +2189,8 @@
     }
   }, 1000);
 
-  // Initialize
+  // Initialize UI & Onboarding
   updateInventoryUI();
   renderHotspots();
+  updateCaseTracker();
 })();
-
-  // Mobile touch gesture handler for quick inventory selection and navigation
-  window.addEventListener('resize', () => {
-    const activeTab = document.querySelector('.room-tab.active');
-    if (activeTab && activeTab.scrollIntoView) {
-      activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }
-  }, { passive: true });
