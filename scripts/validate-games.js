@@ -8,6 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const GAMES_DIR = path.join(ROOT_DIR, 'games');
@@ -28,6 +29,42 @@ console.log('========================================================\n');
 if (!fs.existsSync(GAMES_DIR)) {
   console.error('❌ Critical: games directory not found at:', GAMES_DIR);
   process.exit(1);
+}
+
+// 0. Strict File Protection Audit (CONTRIBUTING.md Compliance for PRs / feature branches)
+const FORBIDDEN_ROOT_FILES = ['assets/js/games-registry.js', 'index.html', 'leaderboard.html'];
+try {
+  const currentBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8', cwd: ROOT_DIR }).trim();
+  // Only enforce on feature / PR branches, not on main release branch
+  if (currentBranch !== 'main' && currentBranch !== 'HEAD') {
+    let baseRef = 'origin/main';
+    try {
+      execSync('git rev-parse --verify origin/main', { stdio: 'ignore' });
+    } catch {
+      baseRef = 'main';
+    }
+
+    const diffOutput = execSync(`git diff --name-only ${baseRef}...HEAD`, { encoding: 'utf8', cwd: ROOT_DIR });
+    const touchedFiles = diffOutput.split('\n').map(s => s.trim()).filter(Boolean);
+    const illegalFiles = touchedFiles.filter(f => FORBIDDEN_ROOT_FILES.includes(f));
+
+    if (illegalFiles.length > 0) {
+      console.log('🚨 ========================================================');
+      console.log('   Strict File Protection Check (CONTRIBUTING.md Compliance)');
+      console.log('========================================================\n');
+      illegalFiles.forEach(f => {
+        console.log(`❌ Unauthorized modification detected: "${f}"`);
+        if (f.includes('games-registry.js')) {
+          console.log(`   💡 NOTE: 'assets/js/games-registry.js' is auto-compiled upon merge by GitHub Actions.`);
+          console.log(`   Editing it in a PR causes MERGE CONFLICTS with the main branch.`);
+          console.log(`   To revert: git checkout ${baseRef} -- assets/js/games-registry.js\n`);
+        }
+        totalErrors++;
+      });
+    }
+  }
+} catch {
+  // Graceful fallback if not running in a git context
 }
 
 const folders = fs.readdirSync(GAMES_DIR, { withFileTypes: true })

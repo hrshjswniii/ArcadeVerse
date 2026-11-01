@@ -264,8 +264,8 @@
 .halloween-title,
 [data-theme="light"] .halloween-title {
   font-family: 'Jolly Lodger', cursive;
-  font-size: clamp(3rem, 6.2vw, 4.6rem);
-  line-height: 1.05;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  line-height: 1.1;
   letter-spacing: 2px;
   color: #ff7700 !important;
   text-shadow: 0 0 18px rgba(255, 119, 0, 0.85),
@@ -274,6 +274,25 @@
   margin: 0;
   position: relative;
   z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.halloween-title-icon {
+  width: clamp(28px, 4vw, 38px);
+  height: clamp(28px, 4vw, 38px);
+  stroke: #ff7700;
+  filter: drop-shadow(0 0 8px rgba(255, 119, 0, 0.8));
+  vertical-align: middle;
+}
+
+.halloween-badge-icon {
+  width: 16px;
+  height: 16px;
+  stroke: #ffaa32;
+  flex-shrink: 0;
 }
 
 /* Animated pumpkin aura glow */
@@ -315,11 +334,12 @@
 
 .halloween-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.8rem;
   position: relative;
   z-index: 2;
   perspective: 1200px;
+  width: 100%;
 }
 
 /* Card Base with Glowing Animated Border */
@@ -347,12 +367,23 @@
   box-shadow: 0 0 0 3px rgba(255, 119, 0, 0.6), 0 12px 35px rgba(0, 0, 0, 0.8) !important;
 }
 
-.halloween-card:hover,
-[data-theme="light"] .halloween-card:hover {
-  border-color: #ff7700 !important;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.85),
-              0 0 32px rgba(255, 119, 0, 0.65),
-              0 0 12px rgba(255, 180, 50, 0.45) !important;
+@media (hover: hover) and (pointer: fine) {
+  .halloween-card:hover,
+  [data-theme="light"] .halloween-card:hover {
+    transform: translateY(-6px);
+    border-color: #ff7700 !important;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.85),
+                0 0 32px rgba(255, 119, 0, 0.65),
+                0 0 12px rgba(255, 180, 50, 0.45) !important;
+  }
+}
+
+/* Touch active feedback without sticky hover */
+@media (hover: none) {
+  .halloween-card:active {
+    transform: scale(0.99);
+    border-color: #ffaa32 !important;
+  }
 }
 
 /* ==========================================================================
@@ -381,12 +412,18 @@
 .banner-hud-pills {
   position: absolute;
   top: 10px;
-  left: 12px;
-  right: 12px;
+  left: 10px;
+  right: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 6px;
   z-index: 4;
+  pointer-events: none;
+}
+
+.banner-hud-pills > * {
+  pointer-events: auto;
 }
 
 .halloween-tag-pill,
@@ -1132,36 +1169,137 @@
 }
 
 /* ==========================================================================
-   8. Responsive Layout Breakpoints
+   8. Responsive Layout Breakpoints & Viewport Sizing Optimization
    ========================================================================== */
 
-/* Tablet (2 Columns) */
+/* Tablet & Intermediate Viewports (768px - 1024px) */
 @media (max-width: 1024px) {
+  .halloween-showcase-section {
+    padding: 0 1.25rem;
+    margin: 2rem auto;
+  }
+  .halloween-container {
+    padding: 2.2rem 1.5rem;
+  }
   .halloween-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
   }
 }
 
-/* Mobile (1 Column) */
+/* Mobile Viewports (< 768px) */
 @media (max-width: 768px) {
   .halloween-container {
-    padding: 2.2rem 1.25rem;
-    border-radius: 18px;
+    padding: 2rem 1.2rem;
+    border-radius: 16px;
   }
   .halloween-grid {
     grid-template-columns: 1fr;
-    gap: 1.3rem;
+    gap: 1.25rem;
   }
   .halloween-card-banner {
-    height: 135px;
+    height: 120px;
   }
   .bat-loader-content {
-    padding: 1.6rem 1.2rem;
-    max-width: 90%;
+    padding: 1.5rem 1rem;
+    max-width: 92%;
   }
   .bat-loader-title {
-    font-size: 2.1rem;
+    font-size: 2rem;
+  }
+}
+
+/* Mobile Phone Viewports (< 480px) */
+@media (max-width: 480px) {
+  .halloween-showcase-section {
+    padding: 0 0.85rem;
+    margin: 1.5rem auto;
+  }
+  .halloween-container {
+    padding: 1.6rem 0.95rem;
+    border-radius: 14px;
+  }
+  .halloween-badge {
+    font-size: 0.72rem;
+    padding: 0.38rem 0.95rem;
+    letter-spacing: 0.08em;
+  }
+  .halloween-title {
+    font-size: clamp(2rem, 8vw, 2.75rem);
+    letter-spacing: 1px;
+    gap: 0.4rem;
+  }
+  .halloween-subtitle {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+  /* Mobile Banner height tuned to 100px to optimize vertical space */
+  .halloween-card-banner {
+    height: 100px;
+  }
+  .halloween-card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+  }
+  .halloween-card-icon svg {
+    width: 26px;
+    height: 26px;
+  }
+  .halloween-card-body {
+    padding: 1.1rem 1.15rem;
+  }
+  .halloween-card-title {
+    font-size: 1.18rem;
+  }
+  .halloween-card-desc {
+    font-size: 0.84rem;
+    line-height: 1.48;
+    margin-bottom: 1rem;
+  }
+  .halloween-card-footer {
+    padding-top: 0.85rem;
+  }
+  .btn-halloween-play {
+    padding: 7px 14px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Narrow Viewports (< 360px) - Ensure tag pills never collide with card icon */
+@media (max-width: 360px) {
+  .banner-hud-pills {
+    top: 6px;
+    left: 6px;
+    right: 6px;
+  }
+  .halloween-tag-pill {
+    font-size: 0.58rem;
+    padding: 2px 6px;
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .halloween-diff-badge {
+    font-size: 0.58rem;
+    padding: 2px 5px;
+    gap: 3px;
+  }
+  .diff-dot {
+    width: 4px;
+    height: 4px;
+  }
+  .halloween-card-banner {
+    height: 95px;
+  }
+  .halloween-card-icon {
+    width: 44px;
+    height: 44px;
+  }
+  .halloween-card-icon svg {
+    width: 22px;
+    height: 22px;
   }
 }
 
@@ -1239,4 +1377,183 @@ body[data-theme="light"] #halloween-games .halloween-card .halloween-author-name
 [data-theme="light"] .halloween-author-name strong,
 .halloween-author-name strong {
   color: #ffaa32 !important;
+}
+
+/* Halloween pill SVG styling */
+.pill-halloween-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+.pill-halloween-icon svg {
+  display: block;
+}
+
+/* ==========================================================================
+   10. Expanded Responsive Fluid Engine & Layout Diagnostics
+   ========================================================================== */
+
+/* Ultrawide Viewport Enhancements (>= 1440px) */
+@media (min-width: 1440px) {
+  .halloween-showcase-section {
+    max-width: 1400px;
+    margin: 3.5rem auto;
+  }
+  .halloween-container {
+    padding: 3.5rem 3rem;
+  }
+  .halloween-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.2rem;
+  }
+  .halloween-card-banner {
+    height: 175px;
+  }
+  .halloween-card-icon {
+    width: 72px;
+    height: 72px;
+  }
+  .halloween-card-icon svg {
+    width: 38px;
+    height: 38px;
+  }
+  .halloween-card-title {
+    font-size: 1.35rem;
+  }
+  .halloween-card-desc {
+    font-size: 0.94rem;
+  }
+}
+
+/* Medium Desktop Viewports (1025px - 1439px) */
+@media (min-width: 1025px) and (max-width: 1439px) {
+  .halloween-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.6rem;
+  }
+  .halloween-card-banner {
+    height: 150px;
+  }
+}
+
+/* Fluid Flex Sizing & Boundary Safeguards */
+.halloween-showcase-section,
+.halloween-container,
+.halloween-grid,
+.halloween-card,
+.halloween-card-body,
+.halloween-card-footer {
+  box-sizing: border-box;
+}
+
+.halloween-card {
+  min-height: 100%;
+}
+
+.halloween-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.halloween-card-desc {
+  flex: 1 1 auto;
+  margin-bottom: 1.25rem;
+}
+
+.halloween-card-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+/* Print Stylesheet Resilience */
+@media print {
+  .halloween-showcase-section {
+    background: transparent !important;
+    color: #000000 !important;
+  }
+  .halloween-container {
+    border: 1px solid #333333 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+  .halloween-card {
+    page-break-inside: avoid;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+  .halloween-title,
+  .halloween-card-title,
+  .halloween-card-desc {
+    color: #000000 !important;
+    text-shadow: none !important;
+  }
+}
+
+/* High Contrast Mode Adaptation (Windows Contrast Themes) */
+@media (forced-colors: active) {
+  .halloween-card {
+    border: 2px solid ButtonText !important;
+  }
+  .halloween-tag-pill,
+  .halloween-diff-badge,
+  .btn-halloween-play {
+    border: 1px solid ButtonText !important;
+  }
+  .halloween-badge {
+    border: 2px solid Highlight !important;
+  }
+}
+
+/* ==========================================================================
+   11. Viewport Specific Micro-Layout Tuning & Sub-pixel Geometry Guards
+   ========================================================================== */
+
+/* Sub-pixel text rendering optimizations */
+.halloween-card-title,
+.halloween-card-desc,
+.halloween-tag-pill,
+.halloween-diff-badge,
+.halloween-author-name {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Landscape Mobile Orientation Adjustments */
+@media (max-height: 520px) and (orientation: landscape) {
+  .halloween-showcase-section {
+    margin: 1.25rem auto;
+  }
+  .halloween-container {
+    padding: 1.5rem 1.2rem;
+  }
+  .halloween-header {
+    margin-bottom: 1.5rem;
+  }
+  .halloween-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.1rem;
+  }
+  .halloween-card-banner {
+    height: 90px;
+  }
+}
+
+/* Focus styles for keyboard accessibility */
+.halloween-card:focus-visible,
+.btn-halloween-play:focus-visible {
+  outline: 2px solid #ffa500 !important;
+  outline-offset: 3px;
+}
+
+/* Reduced data mode efficiency */
+@media (prefers-reduced-data: reduce) {
+  .halloween-card-banner,
+  .halloween-container {
+    background-image: none !important;
+  }
 }
