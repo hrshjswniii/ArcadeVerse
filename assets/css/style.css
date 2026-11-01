@@ -122,6 +122,7 @@ body {
     radial-gradient(var(--dot-pattern-color) 1px, transparent 1px),
     var(--bg-gradient);
   background-size: 28px 28px, 100% 100%;
+  background-attachment: fixed;
   color: var(--text-primary);
 }
 
@@ -6634,25 +6635,36 @@ html.light-mode .trophy-modal-title {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
-[data-theme="light"] .faq-question {
+[data-theme="light"] .faq-question,
+[data-theme="light"] .faq-question-text {
   color: #0f172a !important;
   font-weight: 700 !important;
 }
 
-[data-theme="light"] .faq-accordion-body {
+[data-theme="light"] .faq-chevron {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .faq-accordion-body,
+[data-theme="light"] .faq-accordion-inner,
+[data-theme="light"] .faq-answer-text {
   color: #1e293b !important;
   border-top-color: #e2e8f0 !important;
 }
 
 [data-theme="light"] .faq-accordion-body p,
-[data-theme="light"] .faq-accordion-body li {
+[data-theme="light"] .faq-accordion-body li,
+[data-theme="light"] .faq-answer-text p,
+[data-theme="light"] .faq-answer-text li {
   color: #1e293b !important;
 }
 
-[data-theme="light"] .faq-accordion-body code {
-  color: #0369a1 !important;
+[data-theme="light"] .faq-accordion-body code,
+[data-theme="light"] .faq-answer-text code {
+  color: #0284c7 !important;
   background: #f1f5f9 !important;
   border-color: #cbd5e1 !important;
+  font-weight: 600;
 }
 
 [data-theme="light"] .faq-pill {
