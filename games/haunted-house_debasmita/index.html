@@ -65,7 +65,7 @@
   </header>
 
   <!-- Floating Rooms Nav Bar -->
-  <nav class="rooms-nav" id="roomsNav">
+  <nav class="rooms-nav" id="roomsNav" aria-label="Mansion Floor Navigation">
     <button class="room-tab active" data-room="porch">Porch</button>
     <button class="room-tab locked" data-room="foyer" id="tabFoyer">Foyer</button>
     <button class="room-tab locked" data-room="parlor" id="tabParlor">Living Room</button>
@@ -76,13 +76,13 @@
   </nav>
 
   <!-- Floating Case Tracker -->
-  <div class="case-tracker" id="caseTracker">
+  <div class="case-tracker" id="caseTracker" aria-live="polite" role="region" aria-label="Active Case Objective">
     <span class="case-pill">CASE FILE</span>
     <span class="case-text" id="caseText">Search the porch for the key to unlock Blackwood Manor</span>
   </div>
 
   <!-- Floating Bottom Action & Inventory Dock -->
-  <footer class="bottom-dock">
+  <footer class="bottom-dock" aria-label="Investigator Action Dock">
     <button class="dock-btn" id="btnFlashlight" title="Toggle Flashlight Beam">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>

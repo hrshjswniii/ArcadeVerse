@@ -738,9 +738,13 @@
     sound.playCreak();
     state.currentRoom = roomId;
 
-    // Update Nav Tabs
+    // Update Nav Tabs and smooth-scroll into view on touch/mobile
     document.querySelectorAll('.room-tab').forEach(tab => {
-      tab.classList.toggle('active', tab.getAttribute('data-room') === roomId);
+      const isCurrent = tab.getAttribute('data-room') === roomId;
+      tab.classList.toggle('active', isCurrent);
+      if (isCurrent && tab.scrollIntoView) {
+        tab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
     });
 
     dockHint.textContent = ROOM_CONFIGS[roomId].hint;
@@ -1999,3 +2003,11 @@
   updateInventoryUI();
   renderHotspots();
 })();
+
+  // Mobile touch gesture handler for quick inventory selection and navigation
+  window.addEventListener('resize', () => {
+    const activeTab = document.querySelector('.room-tab.active');
+    if (activeTab && activeTab.scrollIntoView) {
+      activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }, { passive: true });
