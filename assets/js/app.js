@@ -405,7 +405,39 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   fullscreenBtn.addEventListener("click", () => {
-    modalWindow.classList.toggle("fullscreen");
+    const isNowFullscreen = modalWindow.classList.toggle("fullscreen");
+    if (gameModal) {
+      gameModal.classList.toggle("fullscreen-mode", isNowFullscreen);
+    }
+    fullscreenBtn.setAttribute("aria-pressed", isNowFullscreen ? "true" : "false");
+    fullscreenBtn.title = isNowFullscreen ? "Exit Fullscreen" : "Fullscreen Game";
+
+    // Attempt native HTML5 Fullscreen API for seamless zero-chrome immersion
+    if (isNowFullscreen) {
+      if (modalWindow.requestFullscreen) {
+        modalWindow.requestFullscreen().catch(() => {});
+      } else if (modalWindow.webkitRequestFullscreen) {
+        modalWindow.webkitRequestFullscreen();
+      }
+    } else {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    }
+  });
+
+  // Listen to native fullscreen exit (e.g. user presses Esc in native fullscreen)
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement && modalWindow.classList.contains("fullscreen")) {
+      modalWindow.classList.remove("fullscreen");
+      if (gameModal) gameModal.classList.remove("fullscreen-mode");
+      fullscreenBtn.setAttribute("aria-pressed", "false");
+      fullscreenBtn.title = "Fullscreen Game";
+    }
   });
 
   // Sort Selector Change
@@ -518,12 +550,14 @@ document.addEventListener("DOMContentLoaded", () => {
     randomGameBtn.addEventListener("click", launchRandomGame);
   }
 
-  // Halloween cards Play Now buttons click handler
+  // Halloween cards Play Now buttons click handler (delegates to exclusive Halloween bat loader / new tab)
   document.querySelectorAll(".btn-halloween-play").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       const gameId = btn.getAttribute("data-game-id");
-      if (typeof GAMES_REGISTRY !== "undefined") {
+      if (typeof window.launchHalloweenGame === "function") {
+        window.launchHalloweenGame(gameId);
+      } else if (typeof GAMES_REGISTRY !== "undefined") {
         const game = GAMES_REGISTRY.find((g) => g.id === gameId);
         if (game) {
           openGameModal(game, btn);
@@ -538,3 +572,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initial render
   renderGames();
 });
+
+  // Ensure game modal frame updates aspect ratio dynamically on orientation changes
+  window.addEventListener('orientationchange', () => {
+    if (gameModal && gameModal.classList.contains('active')) {
+      const isFullscreen = modalWindow.classList.contains('fullscreen');
+      if (isFullscreen) {
+        modalWindow.style.height = (window.innerHeight) + 'px';
+      }
+    }
+  });
+
+  // Track iframe load complete event to remove spinner
+  if (gameIframe) {
+    gameIframe.addEventListener('load', () => {
+      gameIframe.classList.add('loaded');
+    });
+  }

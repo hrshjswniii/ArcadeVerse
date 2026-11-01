@@ -21,6 +21,22 @@ const GAMES_REGISTRY = [
     "releaseDate": "2026-10-23"
   },
   {
+    "id": "brick-breaker-dx_babin",
+    "title": "Neon Brick Breaker DX: Cyber Shatter",
+    "category": "Arcade / Physics",
+    "lucideIcon": "gamepad-2",
+    "description": "Shatter cybernetic brick matrices with realistic ball physics, explosive power-ups, and multi-level challenges.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/brick-breaker-dx_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "bubble-burst-arena_mistu7debnath",
     "title": "Bubble Pop: Bubble Burst Arena",
     "category": "Arcade",
@@ -42,6 +58,22 @@ const GAMES_REGISTRY = [
     "difficulty": "All Skill Levels"
   },
   {
+    "id": "chrono-shift_babin",
+    "title": "Chrono-Shift: Temporal Paradox",
+    "category": "Puzzle / Platformer",
+    "lucideIcon": "gamepad-2",
+    "description": "Manipulate time buffers and cooperate with holographic past-self echoes to solve paradoxical chamber puzzles.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/chrono-shift_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "circuit-connect_arshi",
     "title": "Circuit Connect",
     "category": "Puzzle",
@@ -60,6 +92,22 @@ const GAMES_REGISTRY = [
     ],
     "stars": 25,
     "featured": true
+  },
+  {
+    "id": "code-breaker_babin",
+    "title": "Cryptic Code Breaker: Mastermind Terminal",
+    "category": "Puzzle / Logic",
+    "lucideIcon": "gamepad-2",
+    "description": "Crack randomized security cipher sequences using colorblind-friendly feedback pegs in a rogue AI terminal.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/code-breaker_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
   },
   {
     "id": "cosmic-orbit-slingshot_babin",
@@ -224,6 +272,22 @@ const GAMES_REGISTRY = [
     "featured": true
   },
   {
+    "id": "cyber-katana_babin",
+    "title": "Cyber-Katana: Neon Deflector",
+    "category": "Action / Reflex",
+    "lucideIcon": "gamepad-2",
+    "description": "Slice, dash, and deflect glowing neon projectile waves in bullet-time cyber combat.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/cyber-katana_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "cyber-light-cycle_babin",
     "title": "Cyber Light Cycle",
     "category": "Retro",
@@ -342,6 +406,22 @@ const GAMES_REGISTRY = [
     "featured": true
   },
   {
+    "id": "cyber-sudoku_babin",
+    "title": "Cyber-Sudoku: Neon Matrix 9x9",
+    "category": "Puzzle / Logic",
+    "lucideIcon": "gamepad-2",
+    "description": "Restore corrupted cyber sector arrays by arranging matrix digits 1-9 without row, column, or sector collisions.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/cyber-sudoku_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "cyber-swarm-assault_babin",
     "title": "Cyber Swarm Assault",
     "category": "Action",
@@ -360,6 +440,22 @@ const GAMES_REGISTRY = [
     ],
     "stars": 50,
     "featured": true
+  },
+  {
+    "id": "detective-mystery_babin",
+    "title": "Detective Mystery: Neo-Tokyo Syndicate",
+    "category": "Adventure / Narrative",
+    "lucideIcon": "gamepad-2",
+    "description": "Investigate cyber crime scenes, interrogate corporate suspects, expose contradictory alibis, and issue arrest verdicts.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/detective-mystery_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
   },
   {
     "id": "escape-room_debasmita",
@@ -466,6 +562,26 @@ const GAMES_REGISTRY = [
     "featured": true,
     "difficulty": "Hard",
     "releaseDate": "2026-10-31"
+  },
+  {
+    "id": "lunar-landing-protocol_joitapaul",
+    "title": "Lunar Landing Protocol",
+    "category": "Arcade",
+    "lucideIcon": "rocket",
+    "description": "Balance thrust, fuel, and lateral steering to land a lunar module safely on a narrow surface pad.",
+    "author": "Joita Paul",
+    "github": "joitapaul",
+    "role": "Contributor",
+    "path": "games/lunar-landing-protocol_joitapaul/index.html",
+    "tags": [
+      "Arcade",
+      "Physics",
+      "Space",
+      "Simulation",
+      "NSOC26"
+    ],
+    "stars": 25,
+    "featured": false
   },
   {
     "id": "memory-matrix_debasmita",
@@ -723,6 +839,22 @@ const GAMES_REGISTRY = [
     "featured": true
   },
   {
+    "id": "quantum-minesweeper-dx_babin",
+    "title": "Quantum Minesweeper DX: Grid Defusal",
+    "category": "Puzzle / Strategy",
+    "lucideIcon": "gamepad-2",
+    "description": "Defuse unstable quantum network anomalies with guaranteed safe first-clicks and precision cascade algorithms.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/quantum-minesweeper-dx_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "quantum-minesweeper_babin",
     "title": "Quantum Minesweeper",
     "category": "Puzzle",
@@ -760,6 +892,22 @@ const GAMES_REGISTRY = [
     "stars": 0,
     "featured": false,
     "difficulty": "Intermediate"
+  },
+  {
+    "id": "quantum-slide_babin",
+    "title": "Quantum Slide: 15-Matrix Shift",
+    "category": "Puzzle / Logic",
+    "lucideIcon": "gamepad-2",
+    "description": "Rearrange scrambled cyber-chips into sequential order on a glowing circuit matrix with guaranteed solvable boards.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/quantum-slide_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
   },
   {
     "id": "quantum-sokoban_babin",
@@ -905,7 +1053,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 218,
+    "commits": 249,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -925,14 +1073,16 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "Babin123456",
     "avatarInitial": "B",
     "role": "Arcade Developer (NSOC '26)",
-    "commits": 147,
-    "gamesCount": 25,
+    "commits": 168,
+    "gamesCount": 33,
     "mechanicsBonus": 2,
     "platformPRs": 29,
     "qualityPRs": 1,
     "bonusPts": 0,
     "contributions": [
+      "Chrono-Shift: Temporal Paradox",
       "Cosmic Orbit Slingshot",
+      "Cryptic Code Breaker: Mastermind Terminal",
       "Cryptic Wordle Hack",
       "Cyber Block Matrix",
       "Cyber Brick Breaker",
@@ -943,7 +1093,11 @@ const CONTRIBUTORS_REGISTRY = [
       "Cyber Snake Matrix",
       "Cyber Swarm Assault",
       "Cyber Tower Stacker",
+      "Cyber-Katana: Neon Deflector",
+      "Cyber-Sudoku: Neon Matrix 9x9",
+      "Detective Mystery: Neo-Tokyo Syndicate",
       "Neon Beat Runner",
+      "Neon Brick Breaker DX: Cyber Shatter",
       "Neon Gravity Rush",
       "Neon Lunar Lander",
       "Neon Missile Command",
@@ -952,6 +1106,8 @@ const CONTRIBUTORS_REGISTRY = [
       "Neon Wave Matcher",
       "Quantum 2048",
       "Quantum Minesweeper",
+      "Quantum Minesweeper DX: Grid Defusal",
+      "Quantum Slide: 15-Matrix Shift",
       "Quantum Sokoban",
       "Space Invaders 2026",
       "Synth-Wave Simon Says",
@@ -991,6 +1147,7 @@ const CONTRIBUTORS_REGISTRY = [
     "qualityPRs": 1,
     "bonusPts": 0,
     "contributions": [
+      "Lunar Landing Protocol",
       "Neon Asteroid Escape",
       "Neon Drift Racer",
       "Prism Pulse: Laser Labyrinth",
