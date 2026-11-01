@@ -42,6 +42,22 @@ const GAMES_REGISTRY = [
     "difficulty": "All Skill Levels"
   },
   {
+    "id": "chrono-shift_babin",
+    "title": "Chrono-Shift: Temporal Paradox",
+    "category": "Puzzle / Platformer",
+    "lucideIcon": "gamepad-2",
+    "description": "Manipulate time buffers and cooperate with holographic past-self echoes to solve paradoxical chamber puzzles.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/chrono-shift_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "circuit-connect_arshi",
     "title": "Circuit Connect",
     "category": "Puzzle",
@@ -908,7 +924,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 236,
+    "commits": 237,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -928,13 +944,14 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "Babin123456",
     "avatarInitial": "B",
     "role": "Arcade Developer (NSOC '26)",
-    "commits": 153,
-    "gamesCount": 25,
+    "commits": 154,
+    "gamesCount": 26,
     "mechanicsBonus": 2,
     "platformPRs": 29,
     "qualityPRs": 1,
     "bonusPts": 0,
     "contributions": [
+      "Chrono-Shift: Temporal Paradox",
       "Cosmic Orbit Slingshot",
       "Cryptic Wordle Hack",
       "Cyber Block Matrix",
