@@ -43,6 +43,7 @@
     constructor() {
       this.ctx = null;
       this.muted = false;
+      this.droneStarted = false;
     }
 
     init() {
@@ -53,6 +54,40 @@
       if (this.ctx && this.ctx.state === 'suspended') {
         this.ctx.resume();
       }
+    }
+
+    startDrone() {
+      if (this.muted || this.droneStarted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(55, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        this.droneStarted = true;
+      } catch (e) {}
+    }
+
+    playDrip() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1400 + Math.random() * 400, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(500, this.ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.08);
     }
 
     playClick() {
@@ -188,6 +223,9 @@
     cauldronBubbles: [],
     cauldronSteam: [],
     torchSparks: [],
+    waterDrops: [],
+    floorRipples: [],
+    dripTimer: 0,
     floatingTexts: [],
     screenShake: { timer: 0, intensity: 0 },
     mousePos: { x: 480, y: 270 }
@@ -258,14 +296,50 @@
   const hotspotTorches = document.getElementById('hotspotTorches');
   const hotspotPlant = document.getElementById('hotspotPlant');
 
-  let toastTimeout = null;
-  function showToast(msg) {
-    if (toastTimeout) clearTimeout(toastTimeout);
-    cryptToast.textContent = msg;
-    cryptToast.classList.add('active');
-    toastTimeout = setTimeout(() => {
-      cryptToast.classList.remove('active');
-    }, 3200);
+  // --- Investigation Reticle Tracking & Hover Feedback ---
+  const investigationReticle = document.getElementById('investigationReticle');
+  const reticleText = document.getElementById('reticleText');
+
+  window.addEventListener('mousemove', e => {
+    if (investigationReticle) {
+      investigationReticle.style.left = `${e.clientX}px`;
+      investigationReticle.style.top = `${e.clientY}px`;
+    }
+  }, { passive: true });
+
+  function bindHotspotReticle(el, defaultLabel) {
+    if (!el) return;
+    el.addEventListener('mouseenter', () => {
+      if (!investigationReticle) return;
+      investigationReticle.classList.add('active');
+      if (state.selectedItem) {
+        reticleText.textContent = `[USE: ${ITEM_NAMES[state.selectedItem] || state.selectedItem}] ${defaultLabel}`;
+      } else {
+        reticleText.textContent = `[EXAMINE] ${defaultLabel}`;
+      }
+    });
+    el.addEventListener('mouseleave', () => {
+      if (investigationReticle) {
+        investigationReticle.classList.remove('active');
+      }
+    });
+  }
+
+  bindHotspotReticle(hotspotBooks, 'Grimoire Bookshelf');
+  bindHotspotReticle(hotspotPlant, 'Dead Nightshade Pot');
+  bindHotspotReticle(hotspotCauldron, 'Alchemical Cauldron');
+  bindHotspotReticle(hotspotPedestal, 'Runic Celestial Altar');
+  bindHotspotReticle(hotspotTorches, 'Braziers & Crypt Fire');
+  bindHotspotReticle(hotspotChest, 'Sarcophagus Relic Chest');
+  bindHotspotReticle(hotspotGate, 'Iron Crypt Gate');
+
+  const btnStartGame = document.getElementById('btnStartGame');
+  if (btnStartGame) {
+    btnStartGame.addEventListener('click', () => {
+      sound.init();
+      sound.startDrone();
+      closeModal(modalHelp);
+    });
   }
 
   
@@ -473,6 +547,17 @@
     cGlow.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = cGlow;
     ctx.fillRect(cx - 85, cy - 65, 170, 150);
+
+    // Glowing firewood embers under cauldron
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(cx - 24, cy + 50, 48, 8);
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
+    for (let ember = 0; ember < 6; ember++) {
+      const ex = cx - 18 + ember * 7 + Math.sin(time * 0.008 + ember) * 2;
+      ctx.beginPath();
+      ctx.arc(ex, cy + 49, 2.5 + Math.sin(time * 0.01 + ember) * 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // Cast iron cauldron belly
     ctx.fillStyle = '#1c102a';
@@ -684,6 +769,47 @@
     for (let r = 15; r < 90; r += 20) {
       ctx.beginPath();
       ctx.arc(VW, 0, r, Math.PI / 2, Math.PI);
+      ctx.stroke();
+    }
+
+    // Dripping condensation from stone ceiling
+    state.dripTimer++;
+    if (state.dripTimer > 95) {
+      state.dripTimer = 0;
+      state.waterDrops.push({
+        x: 310 + Math.random() * 340,
+        y: 60,
+        vy: 2.2 + Math.random() * 0.8
+      });
+    }
+
+    ctx.fillStyle = 'rgba(180, 220, 255, 0.6)';
+    for (let d = state.waterDrops.length - 1; d >= 0; d--) {
+      const drop = state.waterDrops[d];
+      drop.y += drop.vy;
+      drop.vy += 0.18;
+      ctx.beginPath();
+      ctx.ellipse(drop.x, drop.y, 1.5, 3.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      if (drop.y >= 430) {
+        state.floorRipples.push({ x: drop.x, y: 430, r: 2, alpha: 0.75 });
+        sound.playDrip();
+        state.waterDrops.splice(d, 1);
+      }
+    }
+
+    for (let r = state.floorRipples.length - 1; r >= 0; r--) {
+      const rip = state.floorRipples[r];
+      rip.r += 0.65;
+      rip.alpha -= 0.02;
+      if (rip.alpha <= 0) {
+        state.floorRipples.splice(r, 1);
+        continue;
+      }
+      ctx.strokeStyle = `rgba(147, 197, 253, ${rip.alpha})`;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.ellipse(rip.x, rip.y, rip.r, rip.r * 0.45, 0, 0, Math.PI * 2);
       ctx.stroke();
     }
 

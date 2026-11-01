@@ -152,6 +152,62 @@
         }, idx * 160);
       });
     }
+
+    startHorrorAmbient() {
+      if (this.muted || this.droneStarted) return;
+      this.init();
+      if (!this.ctx) return;
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(45, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        this.droneStarted = true;
+      } catch (e) {}
+    }
+
+    playHeartbeat() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      [0, 0.16].forEach(delay => {
+        setTimeout(() => {
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(80, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(35, this.ctx.currentTime + 0.12);
+          gain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.12);
+        }, delay * 1000);
+      });
+    }
+
+    playShadowHiss() {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(700, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.35);
+      gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.35);
+    }
   }
 
   const sound = new SoundEngine();
@@ -178,6 +234,8 @@
   const weatherText = document.getElementById('weatherText');
   const weatherFx = document.getElementById('weatherFx');
   const lightningFx = document.getElementById('lightningFx');
+  const panicVignette = document.getElementById('panicVignette');
+  const duskWarning = document.getElementById('duskWarning');
   const eventToast = document.getElementById('eventToast');
   const questText = document.getElementById('questText');
 
@@ -269,6 +327,9 @@
     },
 
     wildlife: [],
+    shadowStalkers: [],
+    heartbeatCooldown: 0,
+    duskAlerted: false,
     fireflies: [],
     particles: [],
     floatingTexts: [],
@@ -323,6 +384,20 @@
         x: bx,
         y: by,
         hasBerries: true
+      });
+    }
+
+    // Eldritch Nocturnal Shadow Stalkers
+    for (let i = 0; i < 3; i++) {
+      state.shadowStalkers.push({
+        x: ISLAND_CX + (Math.random() - 0.5) * 500,
+        y: ISLAND_CY + (Math.random() - 0.5) * 350,
+        vx: 0,
+        vy: 0,
+        speed: 1.5,
+        alpha: 0,
+        hissCooldown: 0,
+        wobble: Math.random() * Math.PI * 2
       });
     }
 
@@ -425,6 +500,16 @@
 
   // --- Crafting Recipes System ---
   const CRAFTING_RECIPES = [
+    {
+      id: 'survival_torch',
+      title: 'Survival Torch',
+      desc: 'Ignited pine torch. Wards off nocturnal Shadow Stalkers while traversing the dark.',
+      cost: { wood: 2, leaves: 2 },
+      onCraft: () => {
+        state.player.equippedTool = 'Survival Torch';
+        showToast('Crafted Survival Torch! Wards off night stalkers.');
+      }
+    },
     {
       id: 'stone_axe',
       title: 'Stone Axe',
@@ -1319,6 +1404,91 @@
       }
     });
 
+    // --- Night Cycle & Shadow Stalkers AI ---
+    const isDusk = state.timeOfDay >= 0.72 && state.timeOfDay < 0.78;
+    const isNight = state.timeOfDay >= 0.78 || state.timeOfDay < 0.15;
+
+    if (duskWarning) {
+      if (isDusk && !state.duskAlerted) {
+        duskWarning.classList.add('active');
+        state.duskAlerted = true;
+      } else if (!isDusk) {
+        duskWarning.classList.remove('active');
+        if (state.timeOfDay > 0.15 && state.timeOfDay < 0.7) {
+          state.duskAlerted = false;
+        }
+      }
+    }
+
+    // Check if player is protected by firelight
+    let hasFireProtection = (p.equippedTool === 'Survival Torch');
+    if (!hasFireProtection) {
+      for (const cf of state.structures.campfires) {
+        if (Math.hypot(p.x - cf.x, p.y - cf.y) < 170) {
+          hasFireProtection = true;
+          break;
+        }
+      }
+    }
+
+    // Heartbeat & Panic Vignette management
+    state.heartbeatCooldown = Math.max(0, state.heartbeatCooldown - delta);
+    if (p.health < 35 || (isNight && !hasFireProtection)) {
+      if (panicVignette) panicVignette.classList.add('active');
+      if (state.heartbeatCooldown <= 0) {
+        sound.playHeartbeat();
+        state.heartbeatCooldown = p.health < 25 ? 0.8 : 1.3;
+      }
+      if (isNight && !hasFireProtection) {
+        p.energy = Math.max(0, p.energy - 3.5 * delta);
+        p.health = Math.max(0, p.health - 2.5 * delta);
+      }
+    } else {
+      if (panicVignette) panicVignette.classList.remove('active');
+    }
+
+    // Shadow Stalkers Movement & Hunting AI
+    state.shadowStalkers.forEach(ss => {
+      ss.wobble += 0.05;
+      ss.hissCooldown = Math.max(0, ss.hissCooldown - delta);
+
+      if (isNight) {
+        ss.alpha = Math.min(0.9, ss.alpha + delta * 0.5);
+        const distToPlayer = Math.hypot(p.x - ss.x, p.y - ss.y);
+
+        if (hasFireProtection && distToPlayer < 190) {
+          // Recoil from firelight
+          const fleeA = Math.atan2(ss.y - p.y, ss.x - p.x);
+          ss.x += Math.cos(fleeA) * (ss.speed * 1.8);
+          ss.y += Math.sin(fleeA) * (ss.speed * 1.8);
+          if (ss.hissCooldown <= 0) {
+            sound.playShadowHiss();
+            ss.hissCooldown = 4.5;
+            spawnFloatText(ss.x, ss.y - 20, '*HISSS*', '#f87171');
+          }
+        } else if (!hasFireProtection) {
+          // Stalk towards unprotected player
+          const huntA = Math.atan2(p.y - ss.y, p.x - ss.x);
+          ss.x += Math.cos(huntA) * ss.speed;
+          ss.y += Math.sin(huntA) * ss.speed;
+
+          if (distToPlayer < p.radius + 18) {
+            // Shadow strike!
+            p.health = Math.max(0, p.health - 15 * delta);
+            triggerScreenShake(6);
+            if (ss.hissCooldown <= 0) {
+              sound.playAttack();
+              sound.playShadowHiss();
+              ss.hissCooldown = 2.0;
+            }
+          }
+        }
+      } else {
+        // Disperse during day
+        ss.alpha = Math.max(0, ss.alpha - delta * 0.6);
+      }
+    });
+
     // Fireflies Update
     state.fireflies.forEach(ff => {
       ff.x += ff.vx;
@@ -1363,11 +1533,11 @@
     // Apply Camera Translation with Screen Shake
     ctx.translate(-state.camera.x + state.screenShake.x, -state.camera.y + state.screenShake.y);
 
-    // 1. Endless Deep Ocean with Multi-Tier Animated Waves
+    // 1. Endless Dark Churning Cursed Ocean with Multi-Tier Animated Waves
     const oceanGrad = ctx.createRadialGradient(ISLAND_CX, ISLAND_CY, 220, ISLAND_CX, ISLAND_CY, 950);
-    oceanGrad.addColorStop(0, '#0277bd');
-    oceanGrad.addColorStop(0.7, '#01579b');
-    oceanGrad.addColorStop(1, '#002244');
+    oceanGrad.addColorStop(0, '#0a1d30');
+    oceanGrad.addColorStop(0.7, '#040e1a');
+    oceanGrad.addColorStop(1, '#01050a');
     ctx.fillStyle = oceanGrad;
     ctx.fillRect(state.camera.x - 50, state.camera.y - 50, w + 100, h + 100);
 
@@ -1375,7 +1545,7 @@
     for (let waveTier = 0; waveTier < 4; waveTier++) {
       const wRadiusX = ISLAND_RX + 80 + waveTier * 65 + Math.sin(time * 0.0012 + waveTier) * 14;
       const wRadiusY = ISLAND_RY + 65 + waveTier * 45 + Math.cos(time * 0.0012 + waveTier) * 12;
-      ctx.strokeStyle = `rgba(255, 255, 255, ${0.12 - waveTier * 0.025})`;
+      ctx.strokeStyle = `rgba(100, 255, 218, ${0.15 - waveTier * 0.03})`;
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.ellipse(ISLAND_CX, ISLAND_CY, wRadiusX, wRadiusY, 0, 0, Math.PI * 2);
@@ -1405,20 +1575,20 @@
 
     // Dynamic Lapping Shoreline Wave Foam (In and Out Rhythmic Tide)
     const tide = (Math.sin(time * 0.0016) + 1) * 9;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.42)';
+    ctx.strokeStyle = 'rgba(120, 255, 220, 0.45)';
     ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.ellipse(ISLAND_CX, ISLAND_CY, ISLAND_RX + 4 + tide, ISLAND_RY + 4 + tide, 0, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 2. Sandy Beach Terrain
-    ctx.fillStyle = '#dfc282';
+    // 2. Weathered Ashen Dark Beach Terrain
+    ctx.fillStyle = '#615852';
     ctx.beginPath();
     ctx.ellipse(ISLAND_CX, ISLAND_CY, ISLAND_RX, ISLAND_RY, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Subtle Beach Shell & Pebble Specks
-    ctx.fillStyle = 'rgba(180, 150, 100, 0.35)';
+    ctx.fillStyle = 'rgba(35, 30, 25, 0.45)';
     for (let s = 0; s < 24; s++) {
       const sa = s * 0.28;
       const sx = ISLAND_CX + Math.cos(sa) * (ISLAND_RX - 35);
@@ -1428,33 +1598,33 @@
       ctx.fill();
     }
 
-    // 3. Dense Rainforest Grass & Dirt Paths
-    ctx.fillStyle = '#2e7d32';
+    // 3. Dense Primeval Rainforest Moss & Mud Paths
+    ctx.fillStyle = '#143818';
     ctx.beginPath();
     ctx.ellipse(ISLAND_CX, ISLAND_CY - 15, ISLAND_RX - 85, ISLAND_RY - 75, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = '#1b5e20';
+    ctx.fillStyle = '#08210e';
     ctx.beginPath();
     ctx.ellipse(ISLAND_CX, ISLAND_CY - 15, ISLAND_RX - 150, ISLAND_RY - 120, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Soft Drifting Cloud Shadows Over Terrain
-    ctx.fillStyle = 'rgba(8, 24, 40, 0.12)';
+    ctx.fillStyle = 'rgba(4, 12, 22, 0.22)';
     state.cloudShadows.forEach(c => {
       ctx.beginPath();
       ctx.ellipse(c.x, c.y, c.rx, c.ry, 0.2, 0, Math.PI * 2);
       ctx.fill();
     });
 
-    // 4. Freshwater Lagoon / Mountain Spring with Water Ripples
+    // 4. Freshwater Mystic Mountain Spring with Bioluminescent Water Ripples
     const sp = state.spring;
-    ctx.fillStyle = '#29b6f6';
+    ctx.fillStyle = '#00b4d8';
     ctx.beginPath();
     ctx.arc(sp.x, sp.y, sp.radius, 0, Math.PI * 2);
     ctx.fill();
     const springPulse = (Math.sin(time * 0.0025) + 1) * 3;
-    ctx.strokeStyle = 'rgba(129, 212, 250, 0.65)';
+    ctx.strokeStyle = 'rgba(0, 229, 255, 0.75)';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.arc(sp.x, sp.y, sp.radius - 8 + springPulse, 0, Math.PI * 2);
@@ -1474,9 +1644,9 @@
     ctx.save();
     ctx.translate(pw.x, pw.y);
     ctx.rotate(-0.35);
-    ctx.fillStyle = '#cfd8dc';
+    ctx.fillStyle = '#475569';
     ctx.fillRect(-45, -16, 90, 32);
-    ctx.fillStyle = '#90a4ae';
+    ctx.fillStyle = '#334155';
     ctx.fillRect(-12, -50, 24, 100);
     // Dynamic smoke plume
     const smokeWobble = Math.sin(time * 0.004) * 6;
@@ -1740,6 +1910,43 @@
       ctx.restore();
     });
 
+    // 10b. Eldritch Nocturnal Shadow Stalkers
+    state.shadowStalkers.forEach(ss => {
+      if (ss.alpha <= 0.02) return;
+      ctx.save();
+      ctx.translate(ss.x, ss.y);
+      ctx.globalAlpha = ss.alpha;
+
+      const sway = Math.sin(time * 0.005 + ss.wobble) * 4;
+      ctx.fillStyle = 'rgba(5, 5, 10, 0.92)';
+      ctx.beginPath();
+      ctx.ellipse(0 + sway * 0.3, 0, 16, 28, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Wispy shadow tendrils
+      ctx.strokeStyle = 'rgba(10, 8, 16, 0.7)';
+      ctx.lineWidth = 3;
+      for (let t = -12; t <= 12; t += 8) {
+        ctx.beginPath();
+        ctx.moveTo(t, 20);
+        ctx.quadraticCurveTo(t + sway, 35, t + sway * 1.5, 46);
+        ctx.stroke();
+      }
+
+      // Glowing piercing crimson eyes
+      const eyeGlow = 0.7 + Math.sin(time * 0.01 + ss.wobble) * 0.3;
+      ctx.fillStyle = `rgba(239, 68, 68, ${eyeGlow})`;
+      ctx.shadowColor = '#ef4444';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.arc(-5 + sway * 0.2, -10, 3, 0, Math.PI * 2);
+      ctx.arc(5 + sway * 0.2, -10, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      ctx.restore();
+    });
+
     // 11. Player Character with Dynamic Walking Animation & Tool Trail
     const p = state.player;
     ctx.save();
@@ -1782,7 +1989,20 @@
     ctx.save();
     ctx.rotate(swingOffset);
 
-    if (p.equippedTool === 'Stone Axe') {
+    if (p.equippedTool === 'Survival Torch') {
+      ctx.fillStyle = '#5d4037';
+      ctx.fillRect(p.radius * 0.7, -3, 20, 5);
+      // Animated Torch Flame
+      const tSway = Math.sin(time * 0.015) * 3;
+      ctx.fillStyle = '#ff5722';
+      ctx.beginPath();
+      ctx.arc(p.radius * 0.7 + 22, -1 + tSway * 0.3, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffeb3b';
+      ctx.beginPath();
+      ctx.arc(p.radius * 0.7 + 22, -1, 4, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (p.equippedTool === 'Stone Axe') {
       ctx.fillStyle = '#8d6e63';
       ctx.fillRect(p.radius * 0.7, -3, 15, 5);
       ctx.fillStyle = '#78909c';
@@ -1926,17 +2146,54 @@
 
     ctx.restore(); // Restore Camera
 
-    // 17. Day/Night Color Grading Vignette
+    // 17. Day/Night Color Grading & Dynamic Horror Lighting
     let darknessAlpha = 0;
     if (state.timeOfDay > 0.75) {
-      darknessAlpha = Math.min(0.85, (state.timeOfDay - 0.75) * 3.5);
+      darknessAlpha = Math.min(0.92, (state.timeOfDay - 0.75) * 3.8);
     } else if (state.timeOfDay < 0.15) {
-      darknessAlpha = Math.max(0, 0.85 - (state.timeOfDay / 0.15) * 0.85);
+      darknessAlpha = Math.max(0, 0.92 - (state.timeOfDay / 0.15) * 0.92);
     }
 
     if (darknessAlpha > 0) {
-      ctx.fillStyle = `rgba(4, 10, 22, ${darknessAlpha})`;
+      ctx.save();
+      ctx.fillStyle = `rgba(3, 6, 14, ${darknessAlpha})`;
       ctx.fillRect(0, 0, w, h);
+
+      // Cut out light pools using 'destination-out'
+      ctx.globalCompositeOperation = 'destination-out';
+
+      // 1. Player light pool (torch gives wider light)
+      const pScreenX = p.x - state.camera.x + state.screenShake.x;
+      const pScreenY = p.y - state.camera.y + state.screenShake.y;
+      const torchEquipped = (p.equippedTool === 'Survival Torch');
+      const pLightRadius = torchEquipped ? 220 : 110;
+
+      const pGlow = ctx.createRadialGradient(pScreenX, pScreenY, 15, pScreenX, pScreenY, pLightRadius);
+      pGlow.addColorStop(0, `rgba(0, 0, 0, ${darknessAlpha * 0.95})`);
+      pGlow.addColorStop(0.65, `rgba(0, 0, 0, ${darknessAlpha * 0.6})`);
+      pGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = pGlow;
+      ctx.beginPath();
+      ctx.arc(pScreenX, pScreenY, pLightRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 2. Campfires warm safe haven light pools
+      state.structures.campfires.forEach(cf => {
+        const cfScreenX = cf.x - state.camera.x + state.screenShake.x;
+        const cfScreenY = cf.y - state.camera.y + state.screenShake.y;
+        const cfFlicker = 190 + Math.sin(time * 0.015 + cf.x) * 12;
+
+        const cfLight = ctx.createRadialGradient(cfScreenX, cfScreenY, 20, cfScreenX, cfScreenY, cfFlicker);
+        cfLight.addColorStop(0, `rgba(0, 0, 0, ${darknessAlpha * 0.98})`);
+        cfLight.addColorStop(0.7, `rgba(0, 0, 0, ${darknessAlpha * 0.65})`);
+        cfLight.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = cfLight;
+        ctx.beginPath();
+        ctx.arc(cfScreenX, cfScreenY, cfFlicker, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.restore();
     }
 
     // 18. Weather: Falling Rain Streaks
@@ -2006,6 +2263,15 @@
     });
   });
 
+  const btnStartGame = document.getElementById('btnStartGame');
+  if (btnStartGame) {
+    btnStartGame.addEventListener('click', () => {
+      sound.init();
+      sound.startHorrorAmbient();
+      modalHelp.classList.remove('open');
+    });
+  }
+
   document.getElementById('helpBtn').addEventListener('click', () => {
     sound.init();
     modalHelp.classList.add('open');
@@ -2019,6 +2285,7 @@
       soundIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
     } else {
       sound.init();
+      sound.startHorrorAmbient();
       soundIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>';
     }
   });

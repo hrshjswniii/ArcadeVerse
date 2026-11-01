@@ -1,16 +1,17 @@
 {
   "title": "Halloween Escape: Witch's Crypt",
-  "category": "Puzzle / Mystery",
+  "category": "Horror / Escape Room",
   "lucideIcon": "key",
-  "description": "Trapped inside a forgotten witch's crypt on All Hallows' Eve! Decipher runic pedestals, brew alchemical potions in the bubbling cauldron, solve arcane bookshelf codes, and unlock the cursed iron gate before midnight.",
+  "description": "Trapped deep inside a gothic subterranean crypt on All Hallows' Eve! Decipher runic celestial altars, brew corrosive acid in the bubbling cauldron, unseal arcane grimoires, and break the three dark gate wards before the witch returns.",
   "author": "Debasmita Bose",
   "github": "DebasmitaBose0",
   "role": "Project Admin & Lead",
   "tags": [
-    "Halloween",
+    "Horror",
     "Escape Room",
     "Puzzle",
     "Point & Click",
+    "Halloween",
     "NSOC26"
   ],
   "stars": 30,
@@ -18,4 +19,3 @@
   "difficulty": "Medium",
   "releaseDate": "2026-10-31"
 }
-

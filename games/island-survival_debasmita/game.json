@@ -1,16 +1,16 @@
 {
   "title": "Island Survival: Lost Beyond the Shore",
-  "category": "Survival / Adventure",
+  "category": "Survival / Horror",
   "lucideIcon": "compass",
-  "description": "Stranded alone on a mysterious tropical island after a plane crash. Explore dense jungles, forage for coconuts and berries, mine stones, craft axes, spears, and shelters, manage hunger and thirst, hunt wildlife, brave tropical storms, and find a way to escape back to civilization.",
+  "description": "Stranded alone on an uncharted cursed atoll after a harrowing crash. Explore misty primeval mangroves, forage supplies, craft tools and torches, build campfires to ward off nocturnal Shadow Stalkers, manage hunger, thirst, and sanity, and find a way to escape the island's dark curse.",
   "author": "Debasmita Bose",
   "github": "DebasmitaBose0",
   "role": "Project Admin & Lead",
   "tags": [
     "Survival",
+    "Horror",
     "Sandbox",
     "Crafting",
-    "Adventure",
     "Top-Down",
     "NSOC26"
   ],

@@ -10,6 +10,12 @@
   <!-- Header / Navigation HUD -->
   <header class="crypt-header" aria-label="Witch Crypt Escape Header">
     <div class="title-area">
+      <a class="back-link" href="../../index.html" title="Return to ArcadeVerse Hub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M19 12H5M12 19l-7-7 7-7"></path>
+        </svg>
+        <span>ArcadeVerse</span>
+      </a>
       <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 2l-2 2m-1-1l-3 3m2 8A6 6 0 1 1 5 8a6 6 0 0 1 12 6z"></path>
         <circle cx="9" cy="14" r="1.5"></circle>
@@ -58,6 +64,15 @@
       <!-- Animated Canvas Background -->
       <canvas id="roomCanvas" width="960" height="540"></canvas>
       <div class="fog-overlay"></div>
+      <div class="film-grain-overlay" aria-hidden="true"></div>
+
+      <!-- Interactive Dynamic Investigation Reticle -->
+      <div class="investigation-reticle" id="investigationReticle" aria-hidden="true">
+        <div class="reticle-crosshair"></div>
+        <div class="reticle-label" id="reticleLabel">
+          <span class="reticle-text" id="reticleText">Examine</span>
+        </div>
+      </div>
 
       <!-- Interactive Hotspots overlay -->
       <div class="hotspots-container" id="hotspotsContainer">
@@ -172,11 +187,15 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>Four weathered grimoires rest upon the carved mahogany shelf. Above them, a faded riddle is etched into the stone:</p>
-        <p style="margin: 10px 0; font-style: italic; color: #ffca65; text-align: center; border-left: 3px solid #ff7700; padding: 6px 12px; background: rgba(255, 119, 0, 0.08);">
-          Ritual Order: 1. BLOOD (Red) • 2. DUSK (Blue) • 3. VINE (Green) • 4. VOID (Purple)
+        <p>Four weathered grimoires rest upon the carved mahogany shelf. Above them, an ancient occult riddle is etched in faded crimson into the stone:</p>
+        <p style="margin: 12px 0; font-style: italic; color: #ffca65; text-align: center; border-left: 3px solid #ff7700; padding: 8px 14px; background: rgba(255, 119, 0, 0.08); line-height: 1.5;">
+          "When darkness blankets ancient bones,<br>
+          First spills the <strong>BLOOD</strong> to soak the stones.<br>
+          Then <strong>DUSK</strong> descends with fading light,<br>
+          The choking <strong>VINE</strong> claims all in sight,<br>
+          Until the <strong>VOID</strong> consumes the night."
         </p>
-        <p style="font-size: 0.85rem; color: #b59bd8;">Pull the grimoires in the correct ritual sequence:</p>
+        <p style="font-size: 0.85rem; color: #b59bd8; text-align: center;">Pull the grimoires in the correct ritual sequence:</p>
         
         <div class="bookshelf-shelf" id="booksRow">
           <div class="book book-red" data-color="red">BLOOD</div>
@@ -248,10 +267,13 @@
       </div>
       <div class="modal-body">
         <p>Three heavy stone discs are set into the altar. A carving above reads:</p>
-        <p style="margin: 10px 0; font-style: italic; color: #ff9e42; text-align: center; border-left: 3px solid #ff9e42; padding: 6px 12px; background: rgba(255, 158, 66, 0.08);">
-          Celestial Order: Dial 1: MOON • Dial 2: PUMPKIN • Dial 3: SKULL
+        <p style="margin: 12px 0; font-style: italic; color: #ff9e42; text-align: center; border-left: 3px solid #ff9e42; padding: 8px 14px; background: rgba(255, 158, 66, 0.08); line-height: 1.5;">
+          "Three celestial harbingers seal the crypt:<br>
+          First: The Crescent <strong>MOON</strong> ascendant in twilight,<br>
+          Second: The carved <strong>PUMPKIN</strong> burning through midnight,<br>
+          Third: The silent <strong>SKULL</strong> slumbering in death."
         </p>
-        <p style="font-size: 0.85rem; color: #a48cb5; text-align: center;">Rotate the symbols into alignment:</p>
+        <p style="font-size: 0.85rem; color: #a48cb5; text-align: center;">Rotate the symbols into alignment (Moon • Pumpkin • Skull):</p>
 
         <div class="runic-dials-row">
           <!-- Dial 1 -->
@@ -393,41 +415,73 @@
     </div>
   </div>
 
-  <!-- Help / How to Play Modal -->
-  <div class="modal-overlay" id="modalHelp">
-    <div class="modal-box">
+  <!-- Occult Survival & Escape Dossier Modal -->
+  <div class="modal-overlay open" id="modalHelp" role="dialog" aria-modal="true" aria-labelledby="dossierTitle">
+    <div class="modal-box dossier-modal">
       <div class="modal-header">
-        <h3>
+        <h3 id="dossierTitle">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            <path d="M21 2l-2 2m-1-1l-3 3m2 8A6 6 0 1 1 5 8a6 6 0 0 1 12 6z"></path>
+            <circle cx="9" cy="14" r="1.5"></circle>
           </svg>
-          How to Play & Crypt Guide
+          THE WITCH'S CRYPT: SURVIVAL & ESCAPE DOSSIER
         </h3>
-        <button class="modal-close" data-close="modalHelp">
+        <button class="modal-close" data-close="modalHelp" aria-label="Close guide">
           <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
       <div class="modal-body">
-        <h4 style="color: #ff9e42; margin-bottom: 6px;">Objective:</h4>
-        <p>Escape the sealed crypt by solving the 4 arcane puzzles and unlocking the 3 seals on the Iron Crypt Gate.</p>
-
-        <h4 style="color: #ff9e42; margin: 12px 0 6px;">Controls & Interaction:</h4>
-        <ul style="margin-left: 20px; font-size: 0.9rem; line-height: 1.6;">
-          <li><strong>Inspect Hotspots:</strong> Click or tap highlighted objects in the room (Bookshelf, Cauldron, Pedestal, Torches, Relic Chest, Gate, Plant).</li>
-          <li><strong>Inventory:</strong> Click an item in the bottom tray to highlight it, then use it on the corresponding crypt mechanism.</li>
-          <li><strong>Combine & Brew:</strong> Gather the 3 ingredients and brew the Acidic Elixir in the cauldron.</li>
-          <li><strong>Hints:</strong> Tap the Lightbulb button if you get stuck for a cryptic riddle hint.</li>
-        </ul>
-
-        <h4 style="color: #ff9e42; margin: 12px 0 6px;">Halloween Crypt Mechanics:</h4>
-        <p style="font-size: 0.85rem; color: #b59bd8;">
-          All clues are hidden within the inscriptions and symbols carved throughout the crypt. Think carefully before pulling levers and lighting braziers!
+        <p class="dossier-intro">
+          You are trapped in the sunken crypt beneath the ancestral chapel. Three ancient wards bar the Iron Gate: corroded chains, a gilded keyhole, and an arcane eye sigil. Solve the occult puzzles and unseal the gate before midnight!
         </p>
+
+        <div class="survival-rules-grid">
+          <div class="survival-rule-card">
+            <div class="rule-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <div class="rule-body">
+              <h4>1. INVESTIGATE CRYPT HOTSPOTS</h4>
+              <p>Move your reticle over the room to inspect the Bookshelf, Cauldron, Pedestal, Braziers, Plant Pot, and Sarcophagus Chest.</p>
+            </div>
+          </div>
+
+          <div class="survival-rule-card">
+            <div class="rule-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            </div>
+            <div class="rule-body">
+              <h4>2. EQUIP INVENTORY ITEMS</h4>
+              <p>Click any item in your bottom inventory to hold it. When selected, click room objects or puzzles to use it.</p>
+            </div>
+          </div>
+
+          <div class="survival-rule-card">
+            <div class="rule-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16v3a8 8 0 0 1-16 0v-3z"></path><path d="M2 10h20"></path></svg>
+            </div>
+            <div class="rule-body">
+              <h4>3. BREW THE ACIDIC ELIXIR</h4>
+              <p>Gather Mandrake Root from the plant pot, smoldering Cursed Ash from the braziers using your Silver Dagger, and Spider Venom. Brew them in the cauldron to melt the gate chains!</p>
+            </div>
+          </div>
+
+          <div class="survival-rule-card">
+            <div class="rule-icon danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <div class="rule-body">
+              <h4>4. BREAK SEALS & ESCAPE</h4>
+              <p>Align the celestial altar dials (Moon, Pumpkin, Skull) to obtain keys, unseal the Bone Chest for the Eye Talisman, and unlock all 3 gate wards to break free!</p>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-primary" data-close="modalHelp">Enter the Crypt</button>
+        <button class="btn-primary" data-close="modalHelp" id="btnStartGame">
+          <span>ENTER THE WITCH'S CRYPT</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
       </div>
     </div>
   </div>

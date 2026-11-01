@@ -1140,3 +1140,175 @@ body::before {
     padding: 8px 12px;
   }
 }
+
+/* Back Link to ArcadeVerse */
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #c084fc;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  background: rgba(192, 132, 252, 0.12);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.back-link:hover {
+  background: rgba(192, 132, 252, 0.28);
+  color: #fff;
+}
+
+/* Analog Film Grain Overlay */
+.film-grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Dynamic Investigation Reticle */
+.investigation-reticle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 20;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.investigation-reticle.active {
+  opacity: 1;
+}
+
+.reticle-crosshair {
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid rgba(253, 224, 71, 0.7);
+  border-radius: 50%;
+  position: relative;
+  animation: reticle-pulse 1.8s infinite alternate;
+}
+
+.reticle-crosshair::before,
+.reticle-crosshair::after {
+  content: '';
+  position: absolute;
+  background: #fde047;
+}
+
+.reticle-crosshair::before {
+  top: 50%;
+  left: -4px;
+  right: -4px;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.reticle-crosshair::after {
+  left: 50%;
+  top: -4px;
+  bottom: -4px;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+@keyframes reticle-pulse {
+  0% { transform: scale(0.9); border-color: rgba(253, 224, 71, 0.5); }
+  100% { transform: scale(1.15); border-color: #fde047; }
+}
+
+.reticle-label {
+  margin-top: 10px;
+  background: rgba(10, 4, 16, 0.94);
+  border: 1px solid #fde047;
+  border-radius: 6px;
+  padding: 4px 10px;
+  color: #fff;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.9);
+  text-transform: uppercase;
+}
+
+/* Dossier Modal & Survival Rules Grid */
+.dossier-modal {
+  max-width: 620px;
+}
+
+.dossier-intro {
+  color: #d1bfe3;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin-bottom: 16px;
+  background: rgba(157, 78, 221, 0.08);
+  border-left: 3px solid #9d4edd;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.survival-rules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.survival-rule-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.survival-rule-card .rule-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(255, 119, 0, 0.15);
+  color: #ff9e42;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.survival-rule-card .rule-icon.danger {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.survival-rule-card .rule-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.survival-rule-card .rule-body h4 {
+  font-size: 0.78rem;
+  color: #fef08a;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.survival-rule-card .rule-body p {
+  font-size: 0.74rem;
+  color: #c4b5d6;
+  line-height: 1.45;
+}
+
+@media (max-width: 600px) {
+  .survival-rules-grid {
+    grid-template-columns: 1fr;
+  }
+}
