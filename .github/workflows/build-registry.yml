@@ -27,14 +27,15 @@ jobs:
         with:
           node-version: 20
 
-      - name: Verify No Forbidden Root Edits (PR Only)
+      - name: Verify No Forbidden Auto-Generated Edits (PR Only)
         if: github.event_name == 'pull_request'
         run: |
-          # Ensure PRs do not edit assets/js/games-registry.js or forbidden root files
-          FORBIDDEN=$(git diff --name-only origin/main...HEAD | grep -E '^(assets/js/games-registry\.js|index\.html|leaderboard\.html)$' || true)
+          # Ensure PRs do not edit assets/js/games-registry.js manually (auto-compiled on merge).
+          # Root files (index.html, leaderboard.html, assets/*) CAN be modified when necessary for assigned platform/UI issues.
+          FORBIDDEN=$(git diff --name-only origin/main...HEAD | grep -E '^assets/js/games-registry\.js$' || true)
           if [ -n "$FORBIDDEN" ]; then
-            echo "::error::Pull Request modifies forbidden auto-generated/root files: $FORBIDDEN"
-            echo "Per CONTRIBUTING.md, contributors must NEVER edit 'assets/js/games-registry.js' manually."
+            echo "::error::Pull Request modifies auto-generated file: $FORBIDDEN"
+            echo "Per CONTRIBUTING.md, contributors must not edit 'assets/js/games-registry.js' manually."
             echo "Game registration is 100% automated by GitHub Actions from 'games/<game-id>/game.json'."
             echo "To fix merge conflicts, please revert this file:"
             echo "  git checkout origin/main -- assets/js/games-registry.js"
