@@ -25,10 +25,12 @@
     getAudioContext() {
       if (!this.ctx) {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass) this.ctx = new AudioContextClass();
+        if (AudioContextClass) {
+          this.ctx = new AudioContextClass();
+        }
       }
       if (this.ctx && this.ctx.state === 'suspended') {
-        this.ctx.resume();
+        this.ctx.resume().catch(() => {});
       }
       return this.ctx;
     },
@@ -189,9 +191,20 @@
       let lastHoverTarget = null;
       let lastHoverTime = 0;
 
-      // Only deliberate buttons trigger subtle hover, NEVER game-cards or large containers
+      // Global unlocker on first user interaction anywhere
+      const unlockAudio = () => {
+        this.getAudioContext();
+        ['click', 'touchstart', 'keydown'].forEach(evt => {
+          document.removeEventListener(evt, unlockAudio, { capture: true });
+        });
+      };
+      ['click', 'touchstart', 'keydown'].forEach(evt => {
+        document.addEventListener(evt, unlockAudio, { capture: true, passive: true });
+      });
+
+      // Subtle hover tick on interactive buttons and navigation
       document.addEventListener('mouseover', (e) => {
-        const target = e.target.closest('.pill, .nav-item, .sound-toggle-btn, .theme-toggle-btn');
+        const target = e.target.closest('.pill, .nav-item, .nav-link, .docs-nav-link, .sound-toggle-btn, .theme-toggle-btn, .btn-halloween-play, .halloween-card-icon, button, a.btn');
         if (!target) {
           lastHoverTarget = null;
           return;
@@ -199,7 +212,7 @@
         if (target === lastHoverTarget) return;
 
         const now = Date.now();
-        if (now - lastHoverTime < 240) return;
+        if (now - lastHoverTime < 200) return;
 
         lastHoverTarget = target;
         lastHoverTime = now;
@@ -207,13 +220,14 @@
       });
 
       document.addEventListener('click', (e) => {
-        // Unlock AudioContext on first user interaction
+        // Ensure AudioContext is active
         if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
+          this.ctx.resume().catch(() => {});
         }
+
         if (e.target.closest('.pill, .category-pill')) {
           this.playFilterSelect();
-        } else if (e.target.closest('.btn, .nav-item, .rate-star-btn, .podium-trophy-btn, .table-trophy-btn, .theme-toggle-btn, .btn-play-trigger, .tool-portal-card, .game-card')) {
+        } else if (e.target.closest('.btn, .nav-item, .nav-link, .docs-nav-link, .faq-question, .rate-star-btn, .podium-trophy-btn, .table-trophy-btn, .theme-toggle-btn, .btn-play-trigger, .tool-portal-card, .game-card, .halloween-card, .btn-halloween-play, .modal-close-btn, .close-btn, button, a.cta-btn')) {
           this.playClick();
         }
       });

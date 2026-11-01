@@ -347,12 +347,11 @@
 }
 
 .docs-sidebar {
-  position: sticky;
-  top: 92px;
-  max-height: calc(100vh - 110px);
-  overflow-y: auto;
+  /* Natural flow: scrolls naturally along with the page content without being sticky */
+  position: static;
+  max-height: none;
+  overflow: visible;
   padding-right: 1rem;
-  scroll-behavior: smooth;
 }
 
 .docs-sidebar::-webkit-scrollbar {

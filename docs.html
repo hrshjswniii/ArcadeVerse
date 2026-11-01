@@ -696,20 +696,7 @@ Audited 40 games: 0 Errors, 0 Warnings
             }
           });
 
-          // Auto-scroll the sidebar container so the active section link stays in view
-          if (activeLink && sidebar) {
-            const sidebarRect = sidebar.getBoundingClientRect();
-            const linkRect = activeLink.getBoundingClientRect();
-            const isOutOfView = linkRect.top < sidebarRect.top + 20 || linkRect.bottom > sidebarRect.bottom - 20;
-
-            if (isOutOfView) {
-              activeLink.scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest',
-                inline: 'nearest'
-              });
-            }
-          }
+          // Sidebar flows naturally with the page layout; update active navigation states seamlessly
         }
       }
 

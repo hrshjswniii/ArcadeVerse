@@ -269,15 +269,16 @@ textarea:focus-visible,
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border-bottom: 1px solid rgba(0, 245, 255, 0.12);
-  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, backdrop-filter 0.25s ease;
+  transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
 }
 
+/* Semi-transparent ultra-glassy frosted aesthetic on scroll */
 .navbar.scrolled {
-  background: rgba(6, 11, 25, 0.65) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border-bottom: 1px solid rgba(0, 245, 255, 0.22);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  background: rgba(6, 11, 25, 0.38) !important;
+  backdrop-filter: blur(24px) saturate(200%) brightness(105%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(105%) !important;
+  border-bottom: 1px solid rgba(0, 245, 255, 0.25) !important;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 
 /* Stable navbar without fluctuation or layout shifts */
@@ -4876,11 +4877,11 @@ textarea:focus-visible,
 }
 
 [data-theme="light"] .navbar.scrolled {
-  background: rgba(252, 249, 242, 0.68) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border-bottom-color: rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 0 10px 30px rgba(70, 50, 25, 0.08) !important;
+  background: rgba(255, 255, 255, 0.42) !important;
+  backdrop-filter: blur(24px) saturate(190%) contrast(105%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) contrast(105%) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 10px 30px rgba(70, 50, 25, 0.08), inset 0 -1px 0 rgba(255, 255, 255, 0.4) !important;
 }
 
 [data-theme="light"] .logo,
