@@ -277,45 +277,50 @@ html, body {
   border: none;
 }
 
-/* Touch On-Screen Mobile Controls */
+/* Ergonomic Mobile Thumb Controls */
 .touch-container {
   position: fixed;
-  bottom: 80px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 0 20px;
+  inset: 0;
   pointer-events: none;
-  z-index: 25;
+  z-index: 28;
 }
 
 .touch-dpad {
+  position: fixed;
+  bottom: 75px;
+  left: 16px;
   display: grid;
-  grid-template-columns: repeat(3, 44px);
-  grid-template-rows: repeat(3, 44px);
-  gap: 4px;
+  grid-template-columns: repeat(3, 48px);
+  grid-template-rows: repeat(3, 48px);
+  gap: 5px;
   pointer-events: auto;
+  z-index: 30;
 }
 
 .dpad-btn {
-  background: rgba(14, 38, 62, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(6px);
-  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  background: rgba(14, 38, 62, 0.82);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
   color: #f0f7ff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 0.72rem;
+  font-weight: 800;
   cursor: pointer;
   touch-action: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  transition: transform 0.1s ease, background 0.1s ease;
 }
 
 .dpad-btn:active {
   background: #ffb703;
   color: #000;
+  transform: scale(0.93);
+  box-shadow: 0 0 16px rgba(255, 183, 3, 0.8);
 }
 
 .dpad-up { grid-column: 2; grid-row: 1; }
@@ -324,25 +329,43 @@ html, body {
 .dpad-down { grid-column: 2; grid-row: 3; }
 
 .touch-act-btn {
-  width: 60px;
-  height: 60px;
+  position: fixed;
+  bottom: 75px;
+  right: 16px;
+  width: 62px;
+  height: 62px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: 50%;
   background: linear-gradient(135deg, #ffb703, #f57c00);
-  border: 2px solid #fff;
+  border: 2.5px solid #fff;
   color: #000;
-  font-weight: bold;
-  font-size: 0.8rem;
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   pointer-events: auto;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 183, 3, 0.4);
   touch-action: none;
+  z-index: 30;
+  transition: transform 0.1s ease;
 }
 
 .touch-act-btn:active {
-  transform: scale(0.92);
+  transform: scale(0.91);
+  box-shadow: 0 0 20px rgba(255, 183, 3, 0.9);
+}
+
+/* Auto-hide touch controls on devices with fine pointer (mouse/trackpad) */
+@media (hover: hover) and (pointer: fine) {
+  .touch-container,
+  .touch-dpad,
+  .touch-act-btn {
+    display: none !important;
+  }
 }
 
 /* Modals */
@@ -526,37 +549,20 @@ html, body {
   text-transform: uppercase;
 }
 
-@media (max-width: 680px) {
-  .vitals-pod {
-    padding: 4px 10px;
-    gap: 8px;
-  }
-  .vital-bar {
-    width: 45px;
-  }
-  .hud-bottombar {
-    gap: 8px;
-    padding: 6px 10px;
-  }
-  .hotbar-btn span {
-    display: none;
-  }
-}
-
 /* Floating Objective & Mission Tracker */
 .quest-tracker {
   position: fixed;
-  top: 56px;
+  top: 54px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 22;
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: rgba(6, 20, 36, 0.9);
+  gap: 8px;
+  background: rgba(6, 20, 36, 0.92);
   border: 1px solid rgba(255, 183, 3, 0.6);
   backdrop-filter: blur(10px);
-  padding: 5px 16px;
+  padding: 4px 14px;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 183, 3, 0.2);
   pointer-events: auto;
@@ -566,16 +572,17 @@ html, body {
 .quest-pill {
   background: #ffb703;
   color: #000;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 800;
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 10px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .quest-text {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #fff4d1;
   white-space: nowrap;
@@ -583,8 +590,281 @@ html, body {
   text-overflow: ellipsis;
 }
 
-@media (min-width: 769px) {
-  .touch-container {
-    display: none !important;
+/* ==========================================================================
+   Responsive Mobile HUD & Compact Vitals Grid (< 640px)
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .hud-topbar {
+    top: 6px;
+    left: 8px;
+    right: 8px;
+    gap: 8px;
   }
+  /* Vitals Pod arranged into 2x2 compact grid preserving vertical space */
+  .vitals-pod {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px 8px;
+    padding: 5px 10px;
+    border-radius: 14px;
+  }
+  .vital-item {
+    gap: 4px;
+  }
+  .vital-item svg {
+    width: 12px;
+    height: 12px;
+  }
+  .vital-bar {
+    width: 38px;
+    height: 6px;
+  }
+  .time-pod {
+    padding: 4px 8px;
+    font-size: 0.72rem;
+    gap: 5px;
+    border-radius: 14px;
+  }
+  .icon-btn-mini {
+    padding: 3px;
+  }
+  .icon-btn-mini svg {
+    width: 12px;
+    height: 12px;
+  }
+  /* Prevent quest tracker from colliding with topbar */
+  .quest-tracker {
+    top: 68px;
+    max-width: 94vw;
+    padding: 3px 10px;
+  }
+  .quest-pill {
+    font-size: 0.62rem;
+    padding: 1px 6px;
+  }
+  .quest-text {
+    font-size: 0.72rem;
+  }
+  /* Bottom hotbar collapses into compact horizontal badge tray */
+  .hud-bottombar {
+    bottom: 8px;
+    padding: 4px 8px;
+    gap: 6px;
+    border-radius: 12px;
+    max-width: 96vw;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .hud-bottombar::-webkit-scrollbar {
+    display: none;
+  }
+  .hotbar-btn {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .hotbar-btn span {
+    display: none;
+  }
+  .hotbar-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  .hotbar-slot {
+    padding: 3px 6px;
+    font-size: 0.7rem;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .hotbar-slot svg {
+    width: 12px;
+    height: 12px;
+  }
+  /* Crafting manual collapses from 2-columns into 1-column stack */
+  .crafting-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .modal-dialog {
+    max-height: 85vh;
+  }
+  .modal-body {
+    padding: 12px;
+    max-height: calc(85vh - 90px);
+  }
+}
+
+/* Extra small devices (< 360px) */
+@media (max-width: 360px) {
+  .vital-bar {
+    width: 28px;
+  }
+  .touch-dpad {
+    bottom: 65px;
+    left: 8px;
+    grid-template-columns: repeat(3, 42px);
+    grid-template-rows: repeat(3, 42px);
+  }
+  .dpad-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 0.62rem;
+  }
+  .touch-act-btn {
+    bottom: 65px;
+    right: 8px;
+    width: 52px;
+    height: 52px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Accessibility & Interaction States */
+.dpad-btn:focus-visible,
+.touch-act-btn:focus-visible,
+.hotbar-btn:focus-visible {
+  outline: 2px solid #ffb703;
+  outline-offset: 2px;
+}
+
+/* Prevent accidental scrolling while touching canvas */
+#islandCanvas {
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+
+/* ==========================================================================
+   Advanced Ergonomics & High-DPI Island Layout Calibration
+   ========================================================================== */
+
+/* Thumb area padding on iOS with home indicator */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .touch-dpad {
+    bottom: calc(75px + env(safe-area-inset-bottom));
+  }
+  .touch-act-btn {
+    bottom: calc(75px + env(safe-area-inset-bottom));
+  }
+  .hud-bottombar {
+    bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Landscape Mode for Compact Mobile Phones */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hud-topbar {
+    top: 4px;
+    left: 8px;
+    right: 8px;
+  }
+  .vitals-pod {
+    padding: 3px 8px;
+    grid-template-columns: repeat(4, auto);
+    gap: 4px 6px;
+  }
+  .vital-bar {
+    width: 32px;
+    height: 5px;
+  }
+  .quest-tracker {
+    top: 40px;
+    padding: 2px 10px;
+  }
+  .touch-dpad {
+    bottom: 50px;
+    left: 10px;
+    grid-template-columns: repeat(3, 40px);
+    grid-template-rows: repeat(3, 40px);
+  }
+  .dpad-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .touch-act-btn {
+    bottom: 50px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+  }
+  .hud-bottombar {
+    bottom: 4px;
+    padding: 3px 8px;
+  }
+}
+
+/* Reduced Motion Setting */
+@media (prefers-reduced-motion: reduce) {
+  .weather-overlay.rain,
+  .storm-lightning.flash {
+    animation: none !important;
+  }
+  .touch-act-btn,
+  .dpad-btn,
+  .hotbar-btn {
+    transition: none !important;
+  }
+}
+
+/* High Contrast Assist for Outdoor Sun Glare */
+@media (forced-colors: active) {
+  .vitals-pod,
+  .time-pod,
+  .quest-tracker,
+  .hud-bottombar,
+  .dpad-btn,
+  .touch-act-btn {
+    border: 2px solid ButtonText !important;
+  }
+}
+
+/* Enhanced Crafting Recipe Card Details */
+.craft-recipe {
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+
+.craft-card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Hotbar icon alignment */
+.hotbar-slot span {
+  font-variant-numeric: tabular-nums;
+}
+
+.event-toast {
+  letter-spacing: 0.03em;
+}
+
+/* Fine-tuned Touch Hitboxes & Boundary Enforcements */
+.dpad-btn,
+.touch-act-btn {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.hotbar-slot:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.craft-card:hover {
+  border-color: #27527f;
+}
+
+.modal-dialog {
+  will-change: transform, opacity;
+}
+
+/* Optimize backdrop blur performance on mobile GPU */
+.vitals-pod,
+.time-pod,
+.hud-bottombar,
+.quest-tracker {
+  transform: translateZ(0);
 }

@@ -1888,20 +1888,24 @@
 
     if (nearestPrompt) {
       ctx.save();
-      ctx.font = 'bold 12px "Segoe UI", sans-serif';
-      const textWidth = ctx.measureText(nearestPrompt.text).width;
+      // Responsive dynamic font scaling for high-DPI and mobile displays
+      const isMobileTouch = window.innerWidth <= 640 || ('ontouchstart' in window);
+      const displayText = isMobileTouch ? nearestPrompt.text.replace('\[SPACE / Click\]', '[ACT / Tap]') : nearestPrompt.text;
+      const fontSize = isMobileTouch ? 11 : 12;
+      ctx.font = 'bold ' + fontSize + 'px "Segoe UI", sans-serif';
+      const textWidth = ctx.measureText(displayText).width;
       ctx.fillStyle = 'rgba(6, 20, 36, 0.92)';
       ctx.strokeStyle = '#ffb703';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.roundRect(nearestPrompt.x - textWidth / 2 - 8, nearestPrompt.y - 12, textWidth + 16, 24, 6);
+      ctx.roundRect(nearestPrompt.x - textWidth / 2 - 8, nearestPrompt.y - 11, textWidth + 16, 22, 6);
       ctx.fill();
       ctx.stroke();
 
       ctx.fillStyle = '#ffea00';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(nearestPrompt.text, nearestPrompt.x, nearestPrompt.y);
+      ctx.fillText(displayText, nearestPrompt.x, nearestPrompt.y);
       ctx.restore();
     }
 
@@ -2025,3 +2029,11 @@
 
   updateUI();
 })();
+
+  // Dynamic screen resize handling for touch HUD recalculation
+  window.addEventListener('resize', () => {
+    if (state && state.canvas) {
+      state.canvas.width = window.innerWidth;
+      state.canvas.height = window.innerHeight;
+    }
+  }, { passive: true });
