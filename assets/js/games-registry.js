@@ -410,6 +410,22 @@ const GAMES_REGISTRY = [
     "featured": true
   },
   {
+    "id": "detective-mystery_babin",
+    "title": "Detective Mystery: Neo-Tokyo Syndicate",
+    "category": "Adventure / Narrative",
+    "lucideIcon": "gamepad-2",
+    "description": "Investigate cyber crime scenes, interrogate corporate suspects, expose contradictory alibis, and issue arrest verdicts.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/detective-mystery_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "escape-room_debasmita",
     "title": "Halloween Escape: Witch's Crypt",
     "category": "Puzzle / Mystery",
@@ -956,7 +972,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 239,
+    "commits": 240,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -976,8 +992,8 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "Babin123456",
     "avatarInitial": "B",
     "role": "Arcade Developer (NSOC '26)",
-    "commits": 156,
-    "gamesCount": 28,
+    "commits": 157,
+    "gamesCount": 29,
     "mechanicsBonus": 2,
     "platformPRs": 29,
     "qualityPRs": 1,
@@ -996,6 +1012,7 @@ const CONTRIBUTORS_REGISTRY = [
       "Cyber Snake Matrix",
       "Cyber Swarm Assault",
       "Cyber Tower Stacker",
+      "Detective Mystery: Neo-Tokyo Syndicate",
       "Neon Beat Runner",
       "Neon Brick Breaker DX: Cyber Shatter",
       "Neon Gravity Rush",
