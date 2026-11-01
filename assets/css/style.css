@@ -1725,12 +1725,16 @@ textarea:focus-visible,
   backdrop-filter: blur(8px);
 }
 
+/* Dynamic Viewport Height (100dvh / 88dvh) to prevent address bar jitter */
 .modal-window {
   position: relative;
   z-index: 2;
   width: 100%;
   max-width: 1050px;
-  height: 85vh;
+  height: 88vh;
+  height: 88dvh;
+  max-height: 88vh;
+  max-height: 88dvh;
   background: var(--bg-surface);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-lg);
@@ -1749,7 +1753,9 @@ textarea:focus-visible,
   width: 100vw !important;
   max-width: 100vw !important;
   height: 100vh !important;
+  height: 100dvh !important;
   max-height: 100vh !important;
+  max-height: 100dvh !important;
   border-radius: 0 !important;
   border: none !important;
   margin: 0 !important;
@@ -1758,6 +1764,7 @@ textarea:focus-visible,
 .game-modal.fullscreen-mode .modal-frame-wrapper,
 .modal-window.fullscreen .modal-frame-wrapper {
   height: calc(100vh - 65px) !important;
+  height: calc(100dvh - 65px) !important;
   flex: 1 1 auto;
 }
 
@@ -6860,34 +6867,62 @@ html.light-mode .trophy-modal-title {
     justify-content: center;
   }
 
-  /* Fullscreen-optimized Game Player Modal on mobile devices */
+  /* Fullscreen-optimized Game Player Modal on mobile devices with dvh support */
   .modal-window {
     width: 100vw !important;
-    height: 100% !important;
+    height: 100vh !important;
+    height: 100dvh !important;
     max-height: 100vh !important;
+    max-height: 100dvh !important;
     border-radius: 0 !important;
     border: none !important;
     margin: 0 !important;
   }
 
   .modal-topbar {
-    padding: 0.65rem 0.85rem !important;
-    gap: 0.5rem;
+    padding: 0.55rem 0.75rem !important;
+    gap: 0.4rem;
   }
 
   .modal-game-info {
     min-width: 0;
     flex: 1 1 auto;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    overflow: hidden;
   }
 
   .modal-game-info h3,
   #modal-game-title {
-    font-size: 1.05rem !important;
-    max-width: 170px;
+    font-size: 0.95rem !important;
+    max-width: 140px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  /* Collapse author tag and secondary pill on narrow screens (< 480px) to prevent collision */
+  @media (max-width: 480px) {
+    .modal-game-info .author-tag {
+      display: none !important;
+    }
+    .modal-game-info .badge {
+      display: none !important;
+    }
+    .modal-game-info h3,
+    #modal-game-title {
+      max-width: 160px;
+      font-size: 0.92rem !important;
+    }
+    .modal-controls {
+      gap: 0.35rem;
+    }
+    .modal-controls .btn-icon,
+    .modal-controls .btn-close {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      max-width: 32px;
+    }
   }
 
   .modal-game-info .author-tag {
@@ -7055,4 +7090,269 @@ html.light-mode .trophy-modal-title {
   #modal-game-title {
     max-width: 105px !important;
   }
+}
+
+/* ==========================================================================
+   Comprehensive Game Player Modal Frame & Viewport Calibration Suite
+   ========================================================================== */
+
+/* Universal Iframe Container Scaling & Resilient Layering */
+.modal-frame-wrapper {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+  background: #000000;
+  overflow: hidden;
+}
+
+#game-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  display: block;
+}
+
+/* Modal Window Glassmorphism & High Contrast Borders */
+.modal-window {
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(0, 245, 255, 0.15);
+  border: 1.5px solid rgba(0, 245, 255, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Light Mode Overrides for Responsive Modal Player Frame */
+[data-theme="light"] .modal-window {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light"] .modal-topbar {
+  background: #f8fafc !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .modal-game-info h3,
+[data-theme="light"] #modal-game-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .modal-controls .btn-icon,
+[data-theme="light"] .modal-controls .btn-close {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .modal-controls .btn-icon:hover,
+[data-theme="light"] .modal-controls .btn-close:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+  color: #0f172a !important;
+}
+
+/* Keyboard Accessibility Focus Indicators */
+.modal-controls .btn-icon:focus-visible,
+.modal-controls .btn-close:focus-visible {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 2px;
+}
+
+/* Screen Orientation Transitions for Modal Frame */
+@media (orientation: landscape) and (max-height: 540px) {
+  .modal-window {
+    height: 96vh !important;
+    height: 96dvh !important;
+    max-height: 96vh !important;
+    max-height: 96dvh !important;
+  }
+  .modal-topbar {
+    padding: 0.35rem 0.75rem !important;
+  }
+  .modal-game-info h3,
+  #modal-game-title {
+    font-size: 0.88rem !important;
+  }
+}
+
+/* Sub-pixel Mobile Jitter Reduction */
+.game-modal {
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-window {
+  will-change: transform, height, max-height;
+}
+
+/* Hardware Accelerated Viewport Sizing for Game Renderers */
+.game-modal iframe {
+  transform: translateZ(0);
+}
+
+/* ==========================================================================
+   Advanced Modal Viewport Layering & Boundary Security
+   ========================================================================== */
+
+/* Frame loading spinner placeholder */
+.modal-frame-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 245, 255, 0.2);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: modal-spin 1s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes modal-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Modal Title responsive typography */
+#modal-game-title {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+/* Category badge within modal */
+#modal-game-badge {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Author badge initial styling */
+.author-avatar-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: #000;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal control buttons tooltip positioning */
+.modal-controls [data-tooltip] {
+  position: relative;
+}
+
+/* Fullscreen seamless canvas viewport mode */
+.game-modal.fullscreen-mode .modal-window {
+  box-shadow: none !important;
+}
+
+/* High Contrast mode for game modal */
+@media (forced-colors: active) {
+  .modal-window {
+    border: 3px solid ButtonText !important;
+  }
+  .modal-controls .btn-icon,
+  .modal-controls .btn-close {
+    border: 2px solid ButtonText !important;
+  }
+}
+
+/* ==========================================================================
+   Fluid Aspect Ratio Container Safeguards for Embedded Game Frames
+   ========================================================================== */
+
+/* 16:9 and 4:3 Game Canvas Viewport Normalization within Iframe */
+.modal-frame-wrapper.aspect-16-9 {
+  aspect-ratio: 16 / 9;
+  max-height: calc(88dvh - var(--topbar-height, 65px));
+}
+
+.modal-frame-wrapper.aspect-4-3 {
+  aspect-ratio: 4 / 3;
+  max-height: calc(88dvh - var(--topbar-height, 65px));
+}
+
+/* Modal backdrop blur fallback */
+@supports not (backdrop-filter: blur(10px)) {
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.92);
+  }
+}
+
+/* Modal header action micro-interactions */
+.modal-controls .btn-icon:active,
+.modal-controls .btn-close:active {
+  transform: scale(0.92);
+}
+
+/* Clean separation border */
+.modal-topbar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.3), transparent);
+}
+
+/* Safe padding area for iOS notch and dynamic island */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .modal-window.fullscreen .modal-topbar {
+    padding-top: calc(0.9rem + env(safe-area-inset-top)) !important;
+  }
+}
+
+/* Smooth opacity fade for game player frame load */
+#game-iframe.loaded {
+  opacity: 1;
+}
+
+#game-iframe {
+  opacity: 0.99;
+  transition: opacity 0.25s ease-in-out;
+}
+
+/* Mobile topbar spacing refinement */
+@media (max-width: 360px) {
+  .modal-controls {
+    gap: 0.2rem;
+  }
+  .modal-controls .btn-icon,
+  .modal-controls .btn-close {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    max-width: 28px;
+  }
+}
+
+/* Smooth scaling transitions */
+.modal-window {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease,
+              height 0.25s ease;
+}
+
+/* Touch feedback for reload button */
+#reload-btn:active {
+  transform: rotate(180deg);
+}
+
+/* Modal game badge theme contrast */
+.modal-game-info .badge {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+/* Iframe border reset */
+.modal-frame-wrapper iframe {
+  border: none !important;
+  outline: none !important;
 }
