@@ -390,6 +390,22 @@ const GAMES_REGISTRY = [
     "featured": true
   },
   {
+    "id": "cyber-sudoku_babin",
+    "title": "Cyber-Sudoku: Neon Matrix 9x9",
+    "category": "Puzzle / Logic",
+    "lucideIcon": "gamepad-2",
+    "description": "Restore corrupted cyber sector arrays by arranging matrix digits 1-9 without row, column, or sector collisions.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/cyber-sudoku_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "cyber-swarm-assault_babin",
     "title": "Cyber Swarm Assault",
     "category": "Action",
@@ -988,7 +1004,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 241,
+    "commits": 242,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -1008,8 +1024,8 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "Babin123456",
     "avatarInitial": "B",
     "role": "Arcade Developer (NSOC '26)",
-    "commits": 158,
-    "gamesCount": 30,
+    "commits": 159,
+    "gamesCount": 31,
     "mechanicsBonus": 2,
     "platformPRs": 29,
     "qualityPRs": 1,
@@ -1028,6 +1044,7 @@ const CONTRIBUTORS_REGISTRY = [
       "Cyber Snake Matrix",
       "Cyber Swarm Assault",
       "Cyber Tower Stacker",
+      "Cyber-Sudoku: Neon Matrix 9x9",
       "Detective Mystery: Neo-Tokyo Syndicate",
       "Neon Beat Runner",
       "Neon Brick Breaker DX: Cyber Shatter",
