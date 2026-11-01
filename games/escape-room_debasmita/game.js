@@ -1178,3 +1178,12 @@
   updateInventoryUI();
 })();
 
+
+  // Window resize handler for hotspot container calibration
+  window.addEventListener('resize', () => {
+    const stage = document.getElementById('roomStage');
+    if (stage) {
+      stage.style.height = window.innerHeight + 'px';
+      stage.style.width = window.innerWidth + 'px';
+    }
+  }, { passive: true });
