@@ -272,6 +272,22 @@ const GAMES_REGISTRY = [
     "featured": true
   },
   {
+    "id": "cyber-katana_babin",
+    "title": "Cyber-Katana: Neon Deflector",
+    "category": "Action / Reflex",
+    "lucideIcon": "gamepad-2",
+    "description": "Slice, dash, and deflect glowing neon projectile waves in bullet-time cyber combat.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/cyber-katana_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "cyber-light-cycle_babin",
     "title": "Cyber Light Cycle",
     "category": "Retro",
@@ -1040,8 +1056,8 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "Babin123456",
     "avatarInitial": "B",
     "role": "Arcade Developer (NSOC '26)",
-    "commits": 160,
-    "gamesCount": 32,
+    "commits": 169,
+    "gamesCount": 33,
     "mechanicsBonus": 2,
     "platformPRs": 29,
     "qualityPRs": 1,
@@ -1060,6 +1076,7 @@ const CONTRIBUTORS_REGISTRY = [
       "Cyber Snake Matrix",
       "Cyber Swarm Assault",
       "Cyber Tower Stacker",
+      "Cyber-Katana: Neon Deflector",
       "Cyber-Sudoku: Neon Matrix 9x9",
       "Detective Mystery: Neo-Tokyo Syndicate",
       "Neon Beat Runner",
