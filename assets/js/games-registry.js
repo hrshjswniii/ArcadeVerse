@@ -460,18 +460,19 @@ const GAMES_REGISTRY = [
   {
     "id": "escape-room_debasmita",
     "title": "Halloween Escape: Witch's Crypt",
-    "category": "Puzzle / Mystery",
+    "category": "Horror / Escape Room",
     "lucideIcon": "key",
-    "description": "Trapped inside a forgotten witch's crypt on All Hallows' Eve! Decipher runic pedestals, brew alchemical potions in the bubbling cauldron, solve arcane bookshelf codes, and unlock the cursed iron gate before midnight.",
+    "description": "Trapped deep inside a gothic subterranean crypt on All Hallows' Eve! Decipher runic celestial altars, brew corrosive acid in the bubbling cauldron, unseal arcane grimoires, and break the three dark gate wards before the witch returns.",
     "author": "Debasmita Bose",
     "github": "DebasmitaBose0",
     "role": "Project Admin & Lead",
     "path": "games/escape-room_debasmita/index.html",
     "tags": [
-      "Halloween",
+      "Horror",
       "Escape Room",
       "Puzzle",
       "Point & Click",
+      "Halloween",
       "NSOC26"
     ],
     "stars": 30,
@@ -519,6 +520,27 @@ const GAMES_REGISTRY = [
     "featured": true
   },
   {
+    "id": "gridlock-escape_joitapaul",
+    "title": "Gridlock Escape",
+    "category": "puzzle",
+    "lucideIcon": "car",
+    "description": "Slide the traffic jam to clear a clean escape route for the blue getaway vehicle.",
+    "author": "Joita Paul",
+    "github": "joitapaul",
+    "role": "Contributor",
+    "path": "games/gridlock-escape_joitapaul/index.html",
+    "tags": [
+      "puzzle",
+      "traffic",
+      "logic",
+      "sliding-block"
+    ],
+    "stars": 0,
+    "featured": false,
+    "difficulty": "medium",
+    "releaseDate": "2026-11-01"
+  },
+  {
     "id": "haunted-house_debasmita",
     "title": "Haunted House: The Curse Within",
     "category": "Adventure / Horror",
@@ -543,18 +565,18 @@ const GAMES_REGISTRY = [
   {
     "id": "island-survival_debasmita",
     "title": "Island Survival: Lost Beyond the Shore",
-    "category": "Survival / Adventure",
+    "category": "Survival / Horror",
     "lucideIcon": "compass",
-    "description": "Stranded alone on a mysterious tropical island after a plane crash. Explore dense jungles, forage for coconuts and berries, mine stones, craft axes, spears, and shelters, manage hunger and thirst, hunt wildlife, brave tropical storms, and find a way to escape back to civilization.",
+    "description": "Stranded alone on an uncharted cursed atoll after a harrowing crash. Explore misty primeval mangroves, forage supplies, craft tools and torches, build campfires to ward off nocturnal Shadow Stalkers, manage hunger, thirst, and sanity, and find a way to escape the island's dark curse.",
     "author": "Debasmita Bose",
     "github": "DebasmitaBose0",
     "role": "Project Admin & Lead",
     "path": "games/island-survival_debasmita/index.html",
     "tags": [
       "Survival",
+      "Horror",
       "Sandbox",
       "Crafting",
-      "Adventure",
       "Top-Down",
       "NSOC26"
     ],
@@ -800,6 +822,26 @@ const GAMES_REGISTRY = [
     "featured": true
   },
   {
+    "id": "potion-panic_joitapaul",
+    "title": "Potion Panic",
+    "category": "Arcade",
+    "lucideIcon": "flask-conical",
+    "description": "Sort falling magical ingredients into the matching cauldrons before the potion lab overflows.",
+    "author": "Joita Paul",
+    "github": "joitapaul",
+    "role": "Contributor",
+    "path": "games/potion-panic_joitapaul/index.html",
+    "tags": [
+      "Arcade",
+      "Halloween",
+      "Reflex",
+      "Sorting",
+      "NSOC26"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "prism-pulse_joitapaul",
     "title": "Prism Pulse: Laser Labyrinth",
     "category": "Puzzle",
@@ -1025,23 +1067,6 @@ const GAMES_REGISTRY = [
     ],
     "stars": 33,
     "featured": true
-  },
-  {
-    "id": "gridlock-escape_joitapaul",
-    "title": "Gridlock Escape",
-    "category": "Puzzle",
-    "lucideIcon": "car-front",
-    "description": "Slide traffic through a packed city grid and clear a path for your getaway car.",
-    "author": "Joita Paul",
-    "github": "joitapaul",
-    "role": "Contributor",
-    "path": "games/gridlock-escape_joitapaul/index.html",
-    "tags": [
-      "Puzzle",
-      "Logic",
-      "Traffic",
-      "NSOC26"
-    ]
   }
 ];
 
@@ -1053,7 +1078,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 249,
+    "commits": 255,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -1116,6 +1141,27 @@ const CONTRIBUTORS_REGISTRY = [
     ]
   },
   {
+    "name": "Joita Paul",
+    "github": "joitapaul",
+    "avatarInitial": "J",
+    "role": "Active Contributor (NSOC '26)",
+    "commits": 12,
+    "gamesCount": 7,
+    "mechanicsBonus": 0,
+    "platformPRs": 0,
+    "qualityPRs": 1,
+    "bonusPts": 0,
+    "contributions": [
+      "Gridlock Escape",
+      "Lunar Landing Protocol",
+      "Neon Asteroid Escape",
+      "Neon Drift Racer",
+      "Potion Panic",
+      "Prism Pulse: Laser Labyrinth",
+      "Quantum Pinball: Reactor Run"
+    ]
+  },
+  {
     "name": "mistu7debnath",
     "github": "mistu7debnath",
     "avatarInitial": "M",
@@ -1133,26 +1179,6 @@ const CONTRIBUTORS_REGISTRY = [
       "Flappy Cyber Jet",
       "Neon Grid Defense: Core Protocol",
       "Time Warp: Chrono Shift"
-    ]
-  },
-  {
-    "name": "Joita Paul",
-    "github": "joitapaul",
-    "avatarInitial": "J",
-    "role": "Active Contributor (NSOC '26)",
-    "commits": 9,
-    "gamesCount": 5,
-    "mechanicsBonus": 0,
-    "platformPRs": 0,
-    "qualityPRs": 1,
-    "bonusPts": 0,
-    "contributions": [
-      "Lunar Landing Protocol",
-      "Neon Asteroid Escape",
-      "Neon Drift Racer",
-      "Prism Pulse: Laser Labyrinth",
-      "Quantum Pinball: Reactor Run",
-      "Gridlock Escape"
     ]
   },
   {
