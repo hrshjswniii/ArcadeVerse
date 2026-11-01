@@ -823,6 +823,22 @@ const GAMES_REGISTRY = [
     "featured": true
   },
   {
+    "id": "quantum-minesweeper-dx_babin",
+    "title": "Quantum Minesweeper DX: Grid Defusal",
+    "category": "Puzzle / Strategy",
+    "lucideIcon": "gamepad-2",
+    "description": "Defuse unstable quantum network anomalies with guaranteed safe first-clicks and precision cascade algorithms.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/quantum-minesweeper-dx_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "quantum-minesweeper_babin",
     "title": "Quantum Minesweeper",
     "category": "Puzzle",
@@ -1004,7 +1020,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 242,
+    "commits": 243,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -1024,8 +1040,8 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "Babin123456",
     "avatarInitial": "B",
     "role": "Arcade Developer (NSOC '26)",
-    "commits": 159,
-    "gamesCount": 31,
+    "commits": 160,
+    "gamesCount": 32,
     "mechanicsBonus": 2,
     "platformPRs": 29,
     "qualityPRs": 1,
@@ -1056,6 +1072,7 @@ const CONTRIBUTORS_REGISTRY = [
       "Neon Wave Matcher",
       "Quantum 2048",
       "Quantum Minesweeper",
+      "Quantum Minesweeper DX: Grid Defusal",
       "Quantum Slide: 15-Matrix Shift",
       "Quantum Sokoban",
       "Space Invaders 2026",
