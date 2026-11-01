@@ -569,10 +569,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Global export
   window.openGameModal = openGameModal;
 
-  // Initial render
-  renderGames();
-});
-
   // Ensure game modal frame updates aspect ratio dynamically on orientation changes
   window.addEventListener('orientationchange', () => {
     if (gameModal && gameModal.classList.contains('active')) {
@@ -589,3 +585,7 @@ document.addEventListener("DOMContentLoaded", () => {
       gameIframe.classList.add('loaded');
     });
   }
+
+  // Initial render
+  renderGames();
+});
