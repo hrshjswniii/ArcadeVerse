@@ -881,6 +881,25 @@ const GAMES_REGISTRY = [
     "difficulty": "Intermediate"
   },
   {
+    "id": "pumpkin-express_joitapaul",
+    "title": "Pumpkin Express: Haunted Rails",
+    "category": "Puzzle",
+    "lucideIcon": "train-front",
+    "description": "Switch the haunted railway to route a runaway pumpkin train around broken rails and safely into the station.",
+    "author": "Joita Paul",
+    "github": "joitapaul",
+    "role": "Arcade Developer",
+    "path": "games/pumpkin-express_joitapaul/index.html",
+    "tags": [
+      "Halloween",
+      "Puzzle",
+      "Railway",
+      "NSOC26"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "quantum-2048_babin",
     "title": "Quantum 2048",
     "category": "Puzzle",
@@ -1097,7 +1116,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 256,
+    "commits": 257,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -1164,8 +1183,8 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "joitapaul",
     "avatarInitial": "J",
     "role": "Active Contributor (NSOC '26)",
-    "commits": 14,
-    "gamesCount": 8,
+    "commits": 15,
+    "gamesCount": 9,
     "mechanicsBonus": 0,
     "platformPRs": 0,
     "qualityPRs": 1,
@@ -1178,6 +1197,7 @@ const CONTRIBUTORS_REGISTRY = [
       "Neon Drift Racer",
       "Potion Panic",
       "Prism Pulse: Laser Labyrinth",
+      "Pumpkin Express: Haunted Rails",
       "Quantum Pinball: Reactor Run"
     ]
   },
