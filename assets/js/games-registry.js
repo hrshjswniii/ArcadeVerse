@@ -1025,6 +1025,23 @@ const GAMES_REGISTRY = [
     ],
     "stars": 33,
     "featured": true
+  },
+  {
+    "id": "gridlock-escape_joitapaul",
+    "title": "Gridlock Escape",
+    "category": "Puzzle",
+    "lucideIcon": "car-front",
+    "description": "Slide traffic through a packed city grid and clear a path for your getaway car.",
+    "author": "Joita Paul",
+    "github": "joitapaul",
+    "role": "Contributor",
+    "path": "games/gridlock-escape_joitapaul/index.html",
+    "tags": [
+      "Puzzle",
+      "Logic",
+      "Traffic",
+      "NSOC26"
+    ]
   }
 ];
 
@@ -1123,7 +1140,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "joitapaul",
     "avatarInitial": "J",
     "role": "Active Contributor (NSOC '26)",
-    "commits": 10,
+    "commits": 9,
     "gamesCount": 5,
     "mechanicsBonus": 0,
     "platformPRs": 0,
@@ -1134,7 +1151,8 @@ const CONTRIBUTORS_REGISTRY = [
       "Neon Asteroid Escape",
       "Neon Drift Racer",
       "Prism Pulse: Laser Labyrinth",
-      "Quantum Pinball: Reactor Run"
+      "Quantum Pinball: Reactor Run",
+      "Gridlock Escape"
     ]
   },
   {
