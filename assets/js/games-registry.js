@@ -21,6 +21,22 @@ const GAMES_REGISTRY = [
     "releaseDate": "2026-10-23"
   },
   {
+    "id": "brick-breaker-dx_babin",
+    "title": "Neon Brick Breaker DX: Cyber Shatter",
+    "category": "Arcade / Physics",
+    "lucideIcon": "gamepad-2",
+    "description": "Shatter cybernetic brick matrices with realistic ball physics, explosive power-ups, and multi-level challenges.",
+    "author": "Babin Bid",
+    "github": "Babin123456",
+    "role": "Arcade Developer",
+    "path": "games/brick-breaker-dx_babin/index.html",
+    "tags": [
+      "Arcade"
+    ],
+    "stars": 25,
+    "featured": false
+  },
+  {
     "id": "bubble-burst-arena_mistu7debnath",
     "title": "Bubble Pop: Bubble Burst Arena",
     "category": "Arcade",
@@ -924,7 +940,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 237,
+    "commits": 238,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -944,8 +960,8 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "Babin123456",
     "avatarInitial": "B",
     "role": "Arcade Developer (NSOC '26)",
-    "commits": 154,
-    "gamesCount": 26,
+    "commits": 155,
+    "gamesCount": 27,
     "mechanicsBonus": 2,
     "platformPRs": 29,
     "qualityPRs": 1,
@@ -964,6 +980,7 @@ const CONTRIBUTORS_REGISTRY = [
       "Cyber Swarm Assault",
       "Cyber Tower Stacker",
       "Neon Beat Runner",
+      "Neon Brick Breaker DX: Cyber Shatter",
       "Neon Gravity Rush",
       "Neon Lunar Lander",
       "Neon Missile Command",
