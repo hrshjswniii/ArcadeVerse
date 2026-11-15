@@ -2427,7 +2427,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "DebasmitaBose0",
     "avatarInitial": "D",
     "role": "Project Admin & Lead (NSOC '26)",
-    "commits": 566,
+    "commits": 567,
     "gamesCount": 6,
     "mechanicsBonus": 2,
     "platformPRs": 2,
@@ -2625,7 +2625,7 @@ const CONTRIBUTORS_REGISTRY = [
     "github": "hrshjswniii",
     "avatarInitial": "H",
     "role": "Active Contributor (NSOC '26)",
-    "commits": 19,
+    "commits": 26,
     "gamesCount": 2,
     "mechanicsBonus": 0,
     "platformPRs": 0,
@@ -2634,6 +2634,21 @@ const CONTRIBUTORS_REGISTRY = [
     "contributions": [
       "Cyber Brick Breaker: Neon Velocity",
       "Cyber Typer: Terminal Hacker"
+    ]
+  },
+  {
+    "name": "Arshi Bansal",
+    "github": "ArshiBansal",
+    "avatarInitial": "A",
+    "role": "Puzzle Developer (NSOC '26)",
+    "commits": 2,
+    "gamesCount": 1,
+    "mechanicsBonus": 0,
+    "platformPRs": 0,
+    "qualityPRs": 0,
+    "bonusPts": 0,
+    "contributions": [
+      "Circuit Connect"
     ]
   },
   {
@@ -2649,21 +2664,6 @@ const CONTRIBUTORS_REGISTRY = [
     "bonusPts": 0,
     "contributions": [
       "Astro Infinite Jumper"
-    ]
-  },
-  {
-    "name": "Arshi Bansal",
-    "github": "ArshiBansal",
-    "avatarInitial": "A",
-    "role": "Puzzle Developer (NSOC '26)",
-    "commits": 1,
-    "gamesCount": 1,
-    "mechanicsBonus": 0,
-    "platformPRs": 0,
-    "qualityPRs": 0,
-    "bonusPts": 0,
-    "contributions": [
-      "Circuit Connect"
     ]
   },
   {
